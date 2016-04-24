@@ -15,7 +15,7 @@
 package Interfaces
 
 import (
-	. "CustomErrors"
+	. "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 
 // Interface represents Initialize methood
