@@ -12,9 +12,12 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-// Errors project doc.go
-
 /*
+Import
+    "github.com/ivan-kostko/GoLibs/CustomErrors"
+
+Install
+    go get github.com/ivan-kostko/GoLibs/CustomErrors
 
 The package implements extended error functionality, allowing slightly better error handling than golang standart one.
 
