@@ -13,14 +13,11 @@
 //   limitations under the License.
 
 /*
-Import
-    "github.com/ivan-kostko/GoLibs/Common"
 
-Install
-    go get github.com/ivan-kostko/GoLibs/Common
+###Copyright (c) 2016 Ivan A Kostko (github.com/ivan-kostko)
 
-Description
-    The package contains common interfaces and types widly used in other packages
+The repository contains common and generic Golang packages, libraries and frameworks.
+The repository is an acceptor of some code from github.com/ivan-kostko/go-sandbox. For historical changes, please refer to corresponding link provided in commit comment.
 
 */
-package Common
+package GoLibs
