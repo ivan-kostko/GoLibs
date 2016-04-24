@@ -13,6 +13,10 @@
 //   limitations under the License.
 
 /*
-Interfaces document
+Import
+    "github.com/ivan-kostko/GoLibs/Common/Interfaces"
+
+Install
+    go get github.com/ivan-kostko/GoLibs/Common/Interfaces
 */
 package Interfaces
