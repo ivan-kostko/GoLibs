@@ -16,6 +16,10 @@
 Description
     Package Logger provides a common interface and wrapper implementation for logging libraries.
     Contains predefined loggers: StderrLogger(prints error log to Std out)
+NB:
+    For the moment the package is in development(see TODOs).
+    Currently, due to possible changes, it is recommended not to use anything from the package,
+    except ILogger interface.
 Install
     go get "github.com/ivan-kostko/GoLibs/Logger"
 Import
