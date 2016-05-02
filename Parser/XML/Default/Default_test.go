@@ -15,30 +15,20 @@
 package Default
 
 import (
-	"encoding/xml"
+	"testing"
 
-	. "github.com/ivan-kostko/GoLibs/CustomErrors"
+	//. "github.com/ivan-kostko/GoLibs/CustomErrors"
 	parsers "github.com/ivan-kostko/GoLibs/Parser"
 )
 
-var parser = parsers.Parser{Serializer, Deserializer}
+func TestInitRegistration(t *testing.T) {
 
-func init() {
-	parsers.Register(parsers.DefaultXML, &parser)
-}
-
-func Serializer(in interface{}) ([]byte, *Error) {
-	b, err := xml.Marshal(in)
+	p, err := parsers.GetParserByFormat(parsers.DefaultXML)
 	if err != nil {
-		return nil, NewError(InvalidOperation, err.Error())
+		t.Errorf("parser.GetParserByFormat(parser.DefaultXML) returned error %v while no error expected", err)
 	}
-	return b, nil
-}
-
-func Deserializer(document []byte, dest interface{}) *Error {
-	err := xml.Unmarshal(document, dest)
-	if err != nil {
-		return NewError(InvalidOperation, err.Error())
+	expectedParser := &parser
+	if p != expectedParser {
+		t.Errorf("parser.GetParserByFormat(parser.DefaultXML) returned parser %v while expected %v", *p, expectedParser)
 	}
-	return nil
 }
