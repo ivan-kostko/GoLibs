@@ -17,18 +17,27 @@ package Default
 import (
 	"encoding/xml"
 
+	. "github.com/ivan-kostko/GoLibs/CustomErrors"
 	parser "github.com/ivan-kostko/GoLibs/Parser"
 )
 
 func init() {
-	p := parser.Parser{getSerializer(), getDeserializer()}
-	parser.Register(parser.XMLDefault, &p)
+	p := parser.Parser{Serializer, Deserializer}
+	parser.Register(parser.DefaultXML, &p)
 }
 
-func getSerializer() parser.Serializer {
-	return xml.Marshal()
+func Serializer(in interface{}) ([]byte, *Error) {
+	b, err := xml.Marshal(in)
+	if err != nil {
+		return nil, NewError(InvalidOperation, err.Error())
+	}
+	return b, nil
 }
 
-func getDeserializer() parser.Deserializer {
-	return xml.Unmarshal()
+func Deserializer(document []byte, dest interface{}) *Error {
+	err := xml.Unmarshal(document, dest)
+	if err != nil {
+		return NewError(InvalidOperation, err.Error())
+	}
+	return nil
 }
