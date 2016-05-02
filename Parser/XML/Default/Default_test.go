@@ -17,7 +17,6 @@ package Default
 import (
 	"testing"
 
-	//. "github.com/ivan-kostko/GoLibs/CustomErrors"
 	parsers "github.com/ivan-kostko/GoLibs/Parser"
 )
 
