@@ -12,32 +12,22 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-package Parser
+package Default
 
-import "fmt"
+import (
+	"testing"
 
-import . "github.com/ivan-kostko/GoLibs/CustomErrors"
-
-//go:generate stringer -type=Format
-
-const FORMATIOTAOFFSET = 2
-
-// Represents ENUM of supported codecs
-type Format int
-
-const (
-	DefaultXML Format = iota + FORMATIOTAOFFSET
-	DefaultJSON
-	DefaultYAML
+	parsers "github.com/ivan-kostko/GoLibs/Parser"
 )
 
-// Represents factory for Format
-func GetFormatByString(str string) (Format, *Error) {
-	for i := 0; i < len(_Format_index)-1; i++ {
-		if str == _Format_name[_Format_index[i]:_Format_index[i+1]] {
+func TestInitRegistration(t *testing.T) {
 
-			return Format(i + FORMATIOTAOFFSET), nil
-		}
+	p, err := parsers.GetParserByFormat(parsers.XMLDefault)
+	if err != nil {
+		t.Errorf("parser.GetParserByFormat(parser.XMLDefault) returned error %v while no error expected", err)
 	}
-	return 0, NewError(Nonsupported, fmt.Sprintf("Parcer: The codec '%s' is not supported", str))
+	expectedParser := &parser
+	if p != expectedParser {
+		t.Errorf("parser.GetParserByFormat(parser.XMLDefault) returned parser %v while expected %v", *p, expectedParser)
+	}
 }

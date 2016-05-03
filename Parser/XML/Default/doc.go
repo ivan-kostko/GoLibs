@@ -14,7 +14,7 @@
 
 /*
 Install
-    go get "github.com/ivan-kostko/GoLibs/Parser/XML"
+    go get "github.com/ivan-kostko/GoLibs/Parser/XML/Default"
 Import
     "github.com/ivan-kostko/GoLibs/Parser"
     _ "github.com/ivan-kostko/GoLibs/Parser/XML/Default"

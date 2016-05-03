@@ -32,28 +32,28 @@ func TestGetParser(t *testing.T) {
 	testCases := []struct {
 		RegisteredKey   string
 		RegisteredValue interface{}
-		GetFormat       Format
+		GetFormat       FormatParser
 		ExpectedParser  *Parser
 		ExpectedError   *Error
 	}{
 		{
-			"DefaultJSON",
+			"JSONDefault",
 			interface{}(&fakeParser{}),
-			DefaultXML,
+			XMLDefault,
 			nil,
 			NewError(InvalidOperation, ERR_WONTGETPARSER),
 		},
 		{
-			"DefaultXML",
+			"XMLDefault",
 			interface{}(&fakeParser{}),
-			DefaultXML,
+			XMLDefault,
 			nil,
 			NewError(InvalidOperation, ERR_WRONGREGTYPE),
 		},
 		{
-			"DefaultYAML",
+			"YAMLDefault",
 			defaultYAMLParser,
-			DefaultYAML,
+			YAMLDefault,
 			defaultYAMLParser,
 			nil,
 		},
@@ -84,32 +84,32 @@ func TestRegisterParser(t *testing.T) {
 	defaultYAMLParser := &Parser{}
 
 	testCases := []struct {
-		RegisterFormat Format
+		RegisterFormat FormatParser
 		RegisterParser *Parser
 		ExpectedParser *Parser
 		ExpectedError  *Error
 	}{
 		{
-			DefaultXML,
+			XMLDefault,
 			defaultXMLParser,
 			defaultXMLParser,
 			nil,
 		},
 		{
-			DefaultJSON,
+			JSONDefault,
 			defaultJSONParser,
 			defaultJSONParser,
 			nil,
 		},
 		{
-			DefaultYAML,
+			YAMLDefault,
 			defaultYAMLParser,
 			defaultYAMLParser,
 			nil,
 		},
 		{
-			// Rgistering defaultJSONParser for already registered format DefaultYAML should return error. However, parser registerd for DefaultYAML still persists from previous registration.
-			DefaultYAML,
+			// Rgistering defaultJSONParser for already registered format YAMLDefault should return error. However, parser registerd for YAMLDefault still persists from previous registration.
+			YAMLDefault,
 			defaultJSONParser,
 			defaultYAMLParser,
 			NewError(InvalidOperation, ERR_ALREADYREGISTERED),
