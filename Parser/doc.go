@@ -22,5 +22,53 @@ Description
     The main purpose of the package is to have standardized parsers for common use.
 
     TODO(x): Accomplish decoder/encoder functionality
+Example(main.go):
+
+    import (
+        "fmt"
+        "time"
+    	// imports container
+    	"github.com/ivan-kostko/GoLibs/Parser"
+
+    	// registers concreet implementation
+    	_ "github.com/ivan-kostko/GoLibs/Parser/XML/Default"
+    )
+
+    type MyModel struct{
+            Name string
+            Id    int
+            CreatedAt time.Time
+        }
+
+    func main() {
+    	p, err := Parser.GetParserByFormat(Parser.XMLDefault)
+    	if err != nil {
+            fmt.Println(err)
+        }
+        doc := MyModel{
+            "MyName",
+            12345,
+            time.Now(),
+        }
+
+        sdoc, serr := p.Serializer(doc)
+        if serr != nil {
+            fmt.Println(serr)
+        }
+        fmt.Println(string(sdoc))
+
+        ddoc := MyModel{}
+        derr := p.Deserializer(sdoc, &ddoc)
+        if derr != nil {
+            fmt.Println(derr)
+        }
+        fmt.Println(ddoc)
+
+        if doc != ddoc {
+            fmt.Println("Serialize-Deserialize returned %v while original model is %v", ddoc, doc)
+        }
+
+    }
+
 */
 package Parser
