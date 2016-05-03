@@ -24,7 +24,7 @@ import (
 var parser = parsers.Parser{Serializer, Deserializer}
 
 func init() {
-	parsers.Register(parsers.DefaultXML, &parser)
+	parsers.Register(parsers.XMLDefault, &parser)
 }
 
 func Serializer(in interface{}) ([]byte, *Error) {

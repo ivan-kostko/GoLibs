@@ -18,25 +18,25 @@ import "fmt"
 
 import . "github.com/ivan-kostko/GoLibs/CustomErrors"
 
-//go:generate stringer -type=Format
+//go:generate stringer -type=FormatParser
 
-const FORMATIOTAOFFSET = 2
+const FORMATPARSERIOTAOFFSET = 2
 
-// Represents ENUM of supported codecs
-type Format int
+// Represents ENUM of supported implementations
+type FormatParser int
 
 const (
-	DefaultXML Format = iota + FORMATIOTAOFFSET
-	DefaultJSON
-	DefaultYAML
+	XMLDefault FormatParser = iota + FORMATPARSERIOTAOFFSET
+	JSONDefault
+	YAMLDefault
 )
 
 // Represents factory for Format
-func GetFormatByString(str string) (Format, *Error) {
-	for i := 0; i < len(_Format_index)-1; i++ {
-		if str == _Format_name[_Format_index[i]:_Format_index[i+1]] {
+func GetFormatByString(str string) (FormatParser, *Error) {
+	for i := 0; i < len(_FormatParser_index)-1; i++ {
+		if str == _FormatParser_name[_FormatParser_index[i]:_FormatParser_index[i+1]] {
 
-			return Format(i + FORMATIOTAOFFSET), nil
+			return FormatParser(i + FORMATPARSERIOTAOFFSET), nil
 		}
 	}
 	return 0, NewError(Nonsupported, fmt.Sprintf("Parcer: The codec '%s' is not supported", str))

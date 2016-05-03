@@ -23,20 +23,20 @@ import (
 func TestFormatToString(t *testing.T) {
 
 	testCases := []struct {
-		Format   Format
+		Format   FormatParser
 		Expected string
 	}{
 		{
-			DefaultXML,
-			"DefaultXML",
+			XMLDefault,
+			"XMLDefault",
 		},
 		{
-			DefaultJSON,
-			"DefaultJSON",
+			JSONDefault,
+			"JSONDefault",
 		},
 		{
-			DefaultYAML,
-			"DefaultYAML",
+			YAMLDefault,
+			"YAMLDefault",
 		},
 	}
 	for _, testCase := range testCases {
@@ -54,19 +54,19 @@ func TestGetFormatByString(t *testing.T) {
 
 	testCases := []struct {
 		FormatName string
-		Expected   Format
+		Expected   FormatParser
 	}{
 		{
-			"DefaultXML",
-			DefaultXML,
+			"XMLDefault",
+			XMLDefault,
 		},
 		{
-			"DefaultJSON",
-			DefaultJSON,
+			"JSONDefault",
+			JSONDefault,
 		},
 		{
-			"DefaultYAML",
-			DefaultYAML,
+			"YAMLDefault",
+			YAMLDefault,
 		},
 	}
 	for _, testCase := range testCases {
@@ -81,7 +81,7 @@ func TestGetFormatByString(t *testing.T) {
 
 	// Test non existent codec
 	codec := "Nonexistent Format"
-	expectedFormat := Format(0)
+	expectedFormat := FormatParser(0)
 	expectedErrorType := Nonsupported
 	expectedErrorMSg := "Parcer: The codec 'Nonexistent Format' is not supported"
 
