@@ -13,6 +13,10 @@
 //   limitations under the License.
 
 /*
+Install
+    go get "github.com/ivan-kostko/GoLibs/Parser"
+Import
+    "github.com/ivan-kostko/GoLibs/Parser"
 Description
     The package provides interface to internal factory of predefined parser wrappers.
     The main purpose of the package is to have standardized parsers for common use.
