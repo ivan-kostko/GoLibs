@@ -20,6 +20,6 @@ Import
     _ "github.com/ivan-kostko/GoLibs/Parser/XML/Default"
 Description
     The Parser/XML/Default package represents wrapper for encoding/xml Go standard package.
-    It is adapts to interfaces defined at github.com/ivan-kostko/GoLibs/Parser and registers underlying parser implementations at github.com/ivan-kostko/GoLibs/Parser.
+    It adapts standard lib to interfaces defined at github.com/ivan-kostko/GoLibs/Parser and registers underlying parser implementation at github.com/ivan-kostko/GoLibs/Parser.
 */
 package Default

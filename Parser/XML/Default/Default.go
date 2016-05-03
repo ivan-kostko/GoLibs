@@ -21,10 +21,12 @@ import (
 	parsers "github.com/ivan-kostko/GoLibs/Parser"
 )
 
+const REGISTER_AS = parsers.XMLDefault
+
 var parser = parsers.Parser{Serializer, Deserializer}
 
 func init() {
-	parsers.Register(parsers.XMLDefault, &parser)
+	parsers.Register(REGISTER_AS, &parser)
 }
 
 func Serializer(in interface{}) ([]byte, *Error) {

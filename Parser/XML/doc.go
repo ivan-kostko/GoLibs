@@ -19,6 +19,7 @@ Import
     "github.com/ivan-kostko/GoLibs/Parser"
     _ "github.com/ivan-kostko/GoLibs/Parser/XML"
 Description
-    The Parser/XML package represents assembly of wrappers for XML prsing library(es). It is adapted to interfaces defined at github.com/ivan-kostko/GoLibs/Parser and registers all(included) underlying implementations at Parser.
+    The Parser/XML package represents assembly of wrappers for XML prsing library(es).
+    It is adapted to interfaces defined at github.com/ivan-kostko/GoLibs/Parser and registers all(included) underlying implementations at Parser.
 */
 package XML
