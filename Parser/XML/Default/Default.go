@@ -21,12 +21,15 @@ import (
 	parsers "github.com/ivan-kostko/GoLibs/Parser"
 )
 
-const REGISTER_AS = "XmlDefault"
+// The implementation alias which is provided to github.com/ivan-kostko/GoLibs/Parser.Register()
+// It declared as variable for abbility to overide it at build time with the following build/run flads:
+//     go run -ldflags "-X github.com/ivan-kostko/GoLibs/Parser/XML/Default.RegisterAs=BuildTimeAlias" main.go
+var RegisterAs = "XmlDefault"
 
 var parser = parsers.Parser{Serializer, Deserializer}
 
 func init() {
-	parsers.Register(REGISTER_AS, &parser)
+	parsers.Register(RegisterAs, &parser)
 }
 
 func Serializer(in interface{}) ([]byte, *Error) {

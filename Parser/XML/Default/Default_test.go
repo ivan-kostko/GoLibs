@@ -22,12 +22,12 @@ import (
 
 func TestInitRegistration(t *testing.T) {
 
-	p, err := parsers.GetParserByFormat(parsers.XMLDefault)
+	p, err := parsers.GetParser(RegisterAs)
 	if err != nil {
-		t.Errorf("parser.GetParserByFormat(parser.XMLDefault) returned error %v while no error expected", err)
+		t.Errorf("parser.GetParserByFormat(RegisterAs) returned error %v while no error expected", err)
 	}
 	expectedParser := &parser
 	if p != expectedParser {
-		t.Errorf("parser.GetParserByFormat(parser.XMLDefault) returned parser %v while expected %v", *p, expectedParser)
+		t.Errorf("parser.GetParserByFormat(RegisterAs) returned parser %v while expected %v", p, expectedParser)
 	}
 }
