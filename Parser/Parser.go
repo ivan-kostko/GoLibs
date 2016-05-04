@@ -48,7 +48,7 @@ func Register(implementationAlias string, p *Parser) *Error {
 	return nil
 }
 
-// Gets parser by implementation by alias
+// Gets parser by implementation alias
 // In case of error returns nil and InvalidOperation error with one of predefined messages:
 // ERR_WONTGETPARSER
 // ERR_WRONGREGTYPE
