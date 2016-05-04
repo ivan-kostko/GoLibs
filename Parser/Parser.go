@@ -26,10 +26,10 @@ const (
 	ERR_ALREADYREGISTERED = "Parser: There is already registered parser for provided format. Wont register twice"
 )
 
-const INIT_PARSERSCAPACITY = 10
+const INIT_CAPACITY = 10
 
 // Represents the list of registered parsers
-var parsers = tsMap.New(INIT_PARSERSCAPACITY)
+var parsers = tsMap.New(INIT_CAPACITY)
 
 // Defines functionality of parser as combination of two functions: Serialize + Deserialize
 type Parser struct {
@@ -37,23 +37,23 @@ type Parser struct {
 	Deserializer
 }
 
-// Registers parser for a format
-// In case there is already registered Parser with same format it returns ERR_ALREADYREGISTERED skipping further registration steps. So, initial registration stays w/o changes.
-// For.Ex. having registered SomeFormat + SomeParser, registration of SomeFormat + NewParser returns ERR_ALREADYREGISTERED error, keeping initial registration (SomeFormat + SomeParser) w/o changes.
-func Register(f FormatParser, p *Parser) *Error {
-	if _, ok := parsers.Get(f.String()); ok {
+// Registers parser implementation by alias
+// In case there is already registered Parser with same alias it returns ERR_ALREADYREGISTERED skipping further registration steps. So, initial registration stays w/o changes.
+// For.Ex. having registered "SomeImplementation" + SomeParser, registration of "SomeImplementation" + NewParser returns ERR_ALREADYREGISTERED error, keeping initial registration (SomeFormat + SomeParser) w/o changes.
+func Register(implementationAlias string, p *Parser) *Error {
+	if _, ok := parsers.Get(implementationAlias); ok {
 		return NewError(InvalidOperation, ERR_ALREADYREGISTERED)
 	}
-	parsers.Set(f.String(), p)
+	parsers.Set(implementationAlias, p)
 	return nil
 }
 
-// Gets parser by format name as string
+// Gets parser by implementation alias
 // In case of error returns nil and InvalidOperation error with one of predefined messages:
 // ERR_WONTGETPARSER
 // ERR_WRONGREGTYPE
-func getParserByFormatName(f string) (parser *Parser, err *Error) {
-	p, ok := parsers.Get(f)
+func GetParser(implementationAlias string) (parser *Parser, err *Error) {
+	p, ok := parsers.Get(implementationAlias)
 	if !ok {
 		return nil, NewError(InvalidOperation, ERR_WONTGETPARSER)
 	}
@@ -62,12 +62,4 @@ func getParserByFormatName(f string) (parser *Parser, err *Error) {
 		return nil, NewError(InvalidOperation, ERR_WRONGREGTYPE)
 	}
 	return parser, nil
-}
-
-// Gets parser by format
-// In case of error returns empty parser and InvalidOperation error with one of predefined messages:
-// ERR_WONTGETPARSER
-// ERR_WRONGREGTYPE
-func GetParserByFormat(f FormatParser) (parser *Parser, err *Error) {
-	return getParserByFormatName(f.String())
 }

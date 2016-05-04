@@ -21,7 +21,7 @@ import (
 	parsers "github.com/ivan-kostko/GoLibs/Parser"
 )
 
-const REGISTER_AS = parsers.XMLDefault
+const REGISTER_AS = "XmlDefault"
 
 var parser = parsers.Parser{Serializer, Deserializer}
 
