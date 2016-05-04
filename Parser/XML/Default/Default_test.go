@@ -22,7 +22,7 @@ import (
 
 func TestInitRegistration(t *testing.T) {
 
-	p, err := parsers.GetParser(REGISTER_AS)
+	p, err := parsers.GetParser(RegisterAs)
 	if err != nil {
 		t.Errorf("parser.GetParserByFormat(REGISTER_AS) returned error %v while no error expected", err)
 	}
