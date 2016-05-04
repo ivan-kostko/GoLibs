@@ -67,7 +67,7 @@ func TestGetParser(t *testing.T) {
 			t.Errorf("GetParserByFormat(%v) returned Parser as %v and Error as %v \r\n\t\t\t while expected Parser as %v and Error as %v", testCase.GetFormat, actualParser, actualError, testCase.ExpectedParser, testCase.ExpectedError)
 		}
 		// Reset parsers
-		parsers = tsMap.New(INIT_PARSERSCAPACITY)
+		parsers = tsMap.New(INIT_CAPACITY)
 
 	}
 }
