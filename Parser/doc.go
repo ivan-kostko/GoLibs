@@ -22,7 +22,13 @@ Description
     The main purpose of the package is to have standardized parsers for common use.
 
     TODO(x): Accomplish decoder/encoder functionality
-Example(main.go):
+Example
+ Run with the following parameters:
+    go run -ldflags "-X github.com/ivan-kostko/GoLibs/Parser/XML/Default.RegisterAs=DefaultXML" main.go
+
+ main.go:
+
+    package main
 
     import (
         "fmt"
@@ -41,7 +47,7 @@ Example(main.go):
         }
 
     func main() {
-    	p, err := Parser.GetParserByFormat(Parser.XMLDefault)
+    	p, err := Parser.GetParser("DefaultXML")
     	if err != nil {
             fmt.Println(err)
         }
@@ -69,6 +75,7 @@ Example(main.go):
         }
 
     }
+
 
 */
 package Parser
