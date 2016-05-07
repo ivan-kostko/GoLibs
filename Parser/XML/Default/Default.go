@@ -22,14 +22,14 @@ import (
 )
 
 // The implementation alias which is provided to github.com/ivan-kostko/GoLibs/Parser.Register()
-// It declared as variable for abbility to overide it at build time with the following build/run flads:
+// It declared as package private variable for abbility to overide it at build time with the following build/run flags:
 //     go run -ldflags "-X github.com/ivan-kostko/GoLibs/Parser/XML/Default.RegisterAs=BuildTimeAlias" main.go
-var RegisterAs = "XmlDefault"
+var registerAs = "XmlDefault"
 
 var parser = parsers.Parser{Serializer, Deserializer}
 
 func init() {
-	parsers.Register(RegisterAs, &parser)
+	parsers.Register(registerAs, &parser)
 }
 
 func Serializer(in interface{}) ([]byte, *Error) {
