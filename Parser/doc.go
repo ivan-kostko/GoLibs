@@ -24,7 +24,7 @@ Description
     TODO(x): Accomplish decoder/encoder functionality
 Example
  Run with the following parameters:
-    go run -ldflags "-X github.com/ivan-kostko/GoLibs/Parser/XML/Default.RegisterAs=DefaultXML" main.go
+    go run -ldflags "-X github.com/ivan-kostko/GoLibs/Parser/XML/Default.registerAs=DefaultXML" main.go
 
  main.go:
 
