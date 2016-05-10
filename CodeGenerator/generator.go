@@ -16,7 +16,8 @@
 package CodeGenerator
 
 import (
-	"io"
+	"fmt"
+    "io"
 	"text/template"
     "io/ioutil"
 )
@@ -47,6 +48,9 @@ func (g *Generator) template() (*template.Template, error) {
 	}
 
 	tmpl := template.New("template")
-	return tmpl.Parse(string(resource))
+
+    fmt.Println(string(resource))
+
+    return tmpl.Parse(string(resource))
 }
 
