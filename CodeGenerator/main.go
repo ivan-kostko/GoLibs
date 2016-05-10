@@ -24,12 +24,15 @@ import (
 	"strings"
 )
 
+var version = "1.0.1"
+
 func init() {
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "Usage of CodeGenerator:")
 		fmt.Fprintln(os.Stderr, "")
 		fmt.Fprintln(os.Stderr, "  CodeGenerator -pointer -type=<type> -template=<templateFile>")
 		fmt.Fprintln(os.Stderr, "")
+		fmt.Fprintln(os.Stderr, "version: ", version)
 		flag.PrintDefaults()
 	}
 
@@ -55,7 +58,7 @@ func main() {
 	}
 
 	outputFile := formatFileName(*typeName, *templateFile)
-	writer, err := os.Create(filepath.Join(pkgDir, outputFile))
+	writer, err := os.Create(filepath.Join(workingFolder, outputFile))
 	if err != nil {
 		panic(err)
 	}
@@ -63,7 +66,7 @@ func main() {
 
 	generator := NewGenerator(*templateFile)
 
-	m := getNewMetadata(*typeName, *typePointer, pkgDir)
+	m := getNewMetadata(*typeName, *typePointer, executionFolder)
 	if err := generator.Generate(writer, m); err != nil {
 		panic(err)
 	}
@@ -75,22 +78,10 @@ func formatFileName(typeName string, templateFileName string) string {
 	return fmt.Sprintf("%s_%s.go", strings.ToLower(typeName), templateFileName)
 }
 
-func packageDir(packageName string) (string, error) {
-	if packageName == "" {
-		return os.Getwd()
-	}
-
-	path := os.Getenv("GOPATH")
-	if path == "" {
-		return "", errors.New("GOPATH is not set")
-	}
-
-	workDir := filepath.Join(path, "src", packageName)
-	if _, err := os.Stat(workDir); err != nil {
-		return "", err
-	}
-
-	return workDir, nil
+func workingFolder() (string, error) {
+    return os.Getwd()
 }
 
-
+func executionFolder() (string, error) {
+    return filepath.Abs(filepath.Dir(os.Args[0]))
+}
