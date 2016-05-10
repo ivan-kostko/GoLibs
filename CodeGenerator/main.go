@@ -13,7 +13,7 @@
 //   limitations under the License.
 
 
-package CodeGenerator
+package main
 
 import (
 	"errors"
