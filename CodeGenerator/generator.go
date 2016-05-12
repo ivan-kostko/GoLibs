@@ -21,31 +21,17 @@ import (
 )
 
 type Generator struct {
-	template *template.Template
+	tmpl *template.Template
 }
 
 // Generator factory
-func NewGenerator(templateB *template.Template) *Generator {
-    return &Generator{template:    template}
+func NewGenerator(tmpl *template.Template) *Generator {
+    return &Generator{tmpl:    tmpl}
 }
 
 // Generates output into writer applying metadata to Generator template
 func (g *Generator) Generate(writer io.Writer, metadata Metadata) error {
 
-	return g.template.Execute(writer, metadata)
-}
-
-func (g *Generator) template() (*template.Template, error) {
-
-	resource, err := ioutil.ReadFile(g.templateFileName)
-    if err != nil {
-		return nil, err
-	}
-
-	tmpl := template.New("template")
-
-    fmt.Println(string(resource))
-
-    return tmpl.Parse(string(resource))
+	return g.tmpl.Execute(writer, metadata)
 }
 

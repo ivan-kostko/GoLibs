@@ -20,9 +20,16 @@ import (
     "os"
 	"path/filepath"
    	"text/template"
+    "io/ioutil"
     "fmt"
+    "strings"
 )
 
+const (
+    PNC_WONTGETEXEFOLDER = "generator: Won't get execution folder"
+    PNC_WONTGETWRKFOLDER = "generator: Won't get working folder"
+    PNC_TMPLFILENOTFOUND = "generator: Template file not found"
+)
 // The main purpose of the function - to have one standard handler of errors
 func onError(err error){
     // it could be replaced with logger or whatever
@@ -48,31 +55,27 @@ func workingFolder() (string, error) {
     return os.Getwd()
 }
 
-func getTemplateFromFile(templateName string) *template.Template {
+func getTemplateFromFile(templateName string) (*template.Template, error) {
 
     templateFileName := templateName+"."+templateFileExtention
 
     executionFolder, err := executionFolder()
     if checkOnError(err){
-        panic (err)
-    }
-    workingFolder, err := workingFolder()
-    if checkOnError(err){
-        panic (err)
+        panic (PNC_WONTGETEXEFOLDER)
     }
 
-    // Check if file exists at execution folder
-    if _, err := os.Stat(filepath.Join(executionFolder, templateFileName)); os.IsNotExist(err) {
-        onError(err)
-        if _, err := os.Stat(filepath.Join(workingFolder, templateFileName)); checkOnError(err){
-            panic(err)
+    fmt.Println(executionFolder)
+
+    templateFullFileName := filepath.Join(executionFolder, templatesSubFolder, templateFileName)
+
+    // Check if template file exists
+    if _, err := os.Stat(templateFullFileName); checkOnError(err){
+            panic(PNC_TMPLFILENOTFOUND)
         }
-        templateFullFileName := filepath.Join(workingFolder, templateFileName)
-    } else{
-        templateFullFileName := filepath.Join(executionFolder, templateFileName)
-    }
 
-    resource, err := ioutil.ReadFile(g.templateFileName)
+
+
+    resource, err := ioutil.ReadFile(templateFullFileName)
     if checkOnError(err) {
 		panic(err)
 	}
@@ -81,4 +84,27 @@ func getTemplateFromFile(templateName string) *template.Template {
 
     return tmpl.Parse(string(resource))
 
+}
+
+func formatOutputFileName(typeName, templateName string) string {
+	return fmt.Sprintf("%s_%s.go", strings.ToLower(typeName), templateName)
+}
+
+func getOutputFullFileName(typeName, templateName string) (string) {
+    workingFolder, err := workingFolder()
+    if checkOnError(err){
+        panic(PNC_WONTGETWRKFOLDER)
+    }
+    return filepath.Join(workingFolder, formatOutputFileName(typeName, templateName))
+}
+
+func getPackageName(inputPackageName string) string {
+    if inputPackageName == "" {
+        workingFolder, err := workingFolder()
+        if checkOnError(err) {
+    		panic(err)
+    	}
+        return filepath.Base(workingFolder)
+    }
+    return inputPackageName
 }
