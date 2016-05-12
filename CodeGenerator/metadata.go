@@ -19,7 +19,6 @@ import (
     "fmt"
     "unicode"
     "unicode/utf8"
-    "path/filepath"
 )
 
 type Metadata struct {
@@ -39,9 +38,9 @@ func InitToLower(s string) string {
 }
 
 // Metadata private factory
-func getNewMetadata(typeName string, pointerType bool, packageDir string) (m Metadata) {
+func getNewMetadata(typeName string, pointerType bool, packageName string) (m Metadata) {
 	m.TypeName = typeName
-	m.PackageName = filepath.Base(packageDir)
+	m.PackageName = packageName
 
 	if pointerType {
 		m.FullTypeName = fmt.Sprintf("*%s", m.TypeName)

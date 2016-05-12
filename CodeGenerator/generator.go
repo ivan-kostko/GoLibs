@@ -16,41 +16,22 @@
 package main
 
 import (
-	"fmt"
-    "io"
 	"text/template"
-    "io/ioutil"
+    "io"
 )
 
 type Generator struct {
-	templateFileName string
+	tmpl *template.Template
 }
 
 // Generator factory
-func NewGenerator(templateFileName string) *Generator {
-    return &Generator{templateFileName:    templateFileName}
+func NewGenerator(tmpl *template.Template) *Generator {
+    return &Generator{tmpl:    tmpl}
 }
 
+// Generates output into writer applying metadata to Generator template
 func (g *Generator) Generate(writer io.Writer, metadata Metadata) error {
-	tmpl, err := g.template()
-	if err != nil {
-		return nil
-	}
 
-	return tmpl.Execute(writer, metadata)
-}
-
-func (g *Generator) template() (*template.Template, error) {
-
-	resource, err := ioutil.ReadFile(g.templateFileName)
-    if err != nil {
-		return nil, err
-	}
-
-	tmpl := template.New("template")
-
-    fmt.Println(string(resource))
-
-    return tmpl.Parse(string(resource))
+	return g.tmpl.Execute(writer, metadata)
 }
 
