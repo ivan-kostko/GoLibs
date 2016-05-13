@@ -23,12 +23,6 @@ import (
 
 var version = "1.0.1"
 
-var (
-    templateFileExtention = "tmpl"
-    templatesSubFolder    = "CodeGeneratorTemplates"
-)
-
-
 func init() {
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "Usage of CodeGenerator:")

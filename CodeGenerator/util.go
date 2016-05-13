@@ -23,6 +23,7 @@ import (
     "io/ioutil"
     "fmt"
     "strings"
+    "runtime"
 )
 
 const (
@@ -30,6 +31,15 @@ const (
     PNC_WONTGETWRKFOLDER = "generator: Won't get working folder"
     PNC_TMPLFILENOTFOUND = "generator: Template file not found"
 )
+
+
+var (
+    templateFileExtention = "tmpl"
+    templatesMainFolder   = ""
+    templatesSubFolder    = "CodeGeneratorTemplates"
+)
+
+
 // The main purpose of the function - to have one standard handler of errors
 func onError(err error){
     // it could be replaced with logger or whatever
@@ -45,9 +55,20 @@ func checkOnError(err error) bool {
     return isError
 }
 
-//returns binary execution folder
-func executionFolder() (string, error) {
-    return filepath.Abs(filepath.Dir(os.Args[0]))
+//returns template location folder
+//Currently it returns location of built file followed by template subfolder.
+// it is done to grab templates from repository and keep them in sync for all projects
+func templatesFolder() (string) {
+
+    fmt.Println("templatesMainFolder=",templatesMainFolder)
+    if templatesMainFolder == "" {
+        templatesMainFolder = filepath.Dir(func()string{ _, filename, _, _ := runtime.Caller(1); return filename}())
+    }
+    fmt.Println("templatesMainFolder=",templatesMainFolder)
+    if templatesSubFolder == "" {
+        return templatesMainFolder
+    }
+    return filepath.Join( templatesMainFolder, templatesSubFolder)
 }
 
 // returns currently active working folder from which binaries were invoked
@@ -59,14 +80,11 @@ func getTemplateFromFile(templateName string) (*template.Template, error) {
 
     templateFileName := templateName+"."+templateFileExtention
 
-    executionFolder, err := executionFolder()
-    if checkOnError(err){
-        panic (PNC_WONTGETEXEFOLDER)
-    }
+    templatesFolder := templatesFolder()
 
-    fmt.Println(executionFolder)
+    fmt.Println(templatesFolder)
 
-    templateFullFileName := filepath.Join(executionFolder, templatesSubFolder, templateFileName)
+    templateFullFileName := filepath.Join(templatesFolder, templateFileName)
 
     // Check if template file exists
     if _, err := os.Stat(templateFullFileName); checkOnError(err){
