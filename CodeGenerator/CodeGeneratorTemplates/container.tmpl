@@ -55,7 +55,7 @@ func Register(implementationAlias string, impl {{ .FullTypeName }}) *Error {
 func Get(implementationAlias string) (impl {{ .FullTypeName }}, err *Error) {
 	r, ok := {{ .PrivTypeName }}s.Get(implementationAlias)
 	if !ok {
-		return nil, NewError(InvalidOperation, ERR_WONTGETPARSER)
+		return nil, NewError(InvalidOperation, ERR_WONTGET)
 	}
 	impl, ok = r.({{ .FullTypeName }})
 	if !ok {
