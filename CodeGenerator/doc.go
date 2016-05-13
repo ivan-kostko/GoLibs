@@ -18,7 +18,7 @@ Install
     go get "github.com/ivan-kostko/GoLibs/CodeGenerator"
 
     // To define any other location or/and template file extention for templates - use build flags like the following:
-    go get "github.com/ivan-kostko/GoLibs/CodeGenerator" -ldflags "-X github.com/ivan-kostko/GoLibs/CodeGenerator/main.templatesMainFolder=YourLocation github.com/ivan-kostko/GoLibs/CodeGenerator/main.templatesSubFolder= "
+    go get -u -ldflags "-X github.com/ivan-kostko/GoLibs/CodeGenerator.templatesMainFolder='C:\Temp'" "github.com/ivan-kostko/GoLibs/CodeGenerator"
 
 Description
     The project CodeGenerator represents //go:generate tool to generate _.go files from templates

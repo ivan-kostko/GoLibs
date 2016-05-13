@@ -59,9 +59,12 @@ func checkOnError(err error) bool {
 //Currently it returns location of built file followed by template subfolder.
 // it is done to grab templates from repository and keep them in sync for all projects
 func templatesFolder() (string) {
+
+    fmt.Println("templatesMainFolder=",templatesMainFolder)
     if templatesMainFolder == "" {
         templatesMainFolder = filepath.Dir(func()string{ _, filename, _, _ := runtime.Caller(1); return filename}())
     }
+    fmt.Println("templatesMainFolder=",templatesMainFolder)
     if templatesSubFolder == "" {
         return templatesMainFolder
     }
@@ -81,7 +84,7 @@ func getTemplateFromFile(templateName string) (*template.Template, error) {
 
     fmt.Println(templatesFolder)
 
-    templateFullFileName := filepath.Join(templatesFolder, templatesSubFolder, templateFileName)
+    templateFullFileName := filepath.Join(templatesFolder, templateFileName)
 
     // Check if template file exists
     if _, err := os.Stat(templateFullFileName); checkOnError(err){
