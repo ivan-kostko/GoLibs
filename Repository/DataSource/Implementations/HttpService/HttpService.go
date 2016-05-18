@@ -13,7 +13,6 @@
 //   limitations under the License.
 
 
-// HttpService project HttpService.go
 package HttpService
 
 import(
@@ -41,6 +40,8 @@ type Configuration struct {
     // Checks response for http errors
     CheckResponse  func(*http.Response) *Error
 }
+
+
 
 // Generic HTTP service data source factory
 // NB!: conf should be of type HttpService.Configuration. Otherwise it returns InvalidArgument, ERR_IVALIDCONFTYPE
@@ -83,9 +84,7 @@ func GetNewHttpServiceDataSource(conf interface{}) (*ds.DataSource, *Error) {
             return result, nil
     })
 
-    return &ds.DataSource{
-        ExecuteInstruction: executeInstruction,
-    }, nil
+    return ds.GetNewDataSource(executeInstruction), nil
 
 }
 
@@ -93,3 +92,4 @@ func GetNewHttpServiceDataSource(conf interface{}) (*ds.DataSource, *Error) {
 func defaultCheckResponse (res *http.Response) *Error {
     return nil
 }
+
