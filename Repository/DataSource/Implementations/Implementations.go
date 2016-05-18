@@ -16,9 +16,12 @@
 package Implementations
 
 import (
-    ds "../../DataSource"
+    . "../../DataSource"
+    . "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 
-type DataSource ds.DataSource
+//go:generate CodeGenerator -template=container -type=DataSourceImplementationFactory
 
-//go:generate CodeGenerator -pointer -template=container -type=DataSource
+// Represents genric DataSource implementation factory function
+type DataSourceImplementationFactory func(conf interface{}) (*DataSource, *Error)
+
