@@ -13,8 +13,6 @@
 //   limitations under the License.
 
 
-// DataSource project doc.go
-
 /*
 Install
     go get "github.com/ivan-kostko/GoLibs/Repository/DataSource"
