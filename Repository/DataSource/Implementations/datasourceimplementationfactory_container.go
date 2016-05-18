@@ -24,27 +24,27 @@ import (
 // Predefined list of error messages
 const (
 	ERR_WONTGET     	  = "Implementations: Wont get registered instance for given alias"
-	ERR_WRONGREGTYPE      = "Implementations: The registered instance is not of *DataSource type"
+	ERR_WRONGREGTYPE      = "Implementations: The registered instance is not of DataSourceImplementationFactory type"
 	ERR_ALREADYREGISTERED = "Implementations: There is already registered instance for provided alias. Wont register second time"
 )
 
 const INIT_CAPACITY = 10
 
-// Represents the map of registered string(implementation alias) + *DataSource implementation
-var dataSources = tsMap.New(INIT_CAPACITY)
+// Represents the map of registered string(implementation alias) + DataSourceImplementationFactory implementation
+var dataSourceImplementationFactorys = tsMap.New(INIT_CAPACITY)
 
 
 // Registers implementation by alias
-// In case there is already registered *DataSource instance with same alias it returns ERR_ALREADYREGISTERED
+// In case there is already registered DataSourceImplementationFactory instance with same alias it returns ERR_ALREADYREGISTERED
 // skipping further registration steps. So, initial registration stays w/o changes.
 //
-// For.Ex. having registered "SomeImplementation" + SomeDataSource, registration of "SomeImplementation" + NewDataSource returns ERR_ALREADYREGISTERED error,
-// keeping initial registration (SomeFormat + SomeDataSource) w/o changes and available for further use.
-func Register(implementationAlias string, impl *DataSource) *Error {
-	if _, ok := dataSources.Get(implementationAlias); ok {
+// For.Ex. having registered "SomeImplementation" + SomeDataSourceImplementationFactory, registration of "SomeImplementation" + NewDataSourceImplementationFactory returns ERR_ALREADYREGISTERED error,
+// keeping initial registration (SomeFormat + SomeDataSourceImplementationFactory) w/o changes and available for further use.
+func Register(implementationAlias string, impl DataSourceImplementationFactory) *Error {
+	if _, ok := dataSourceImplementationFactorys.Get(implementationAlias); ok {
 		return NewError(InvalidOperation, ERR_ALREADYREGISTERED)
 	}
-	dataSources.Set(implementationAlias, impl)
+	dataSourceImplementationFactorys.Set(implementationAlias, impl)
 	return nil
 }
 
@@ -52,12 +52,12 @@ func Register(implementationAlias string, impl *DataSource) *Error {
 // In case of error returns nil and InvalidOperation error with one of predefined messages:
 // ERR_WONTGET
 // ERR_WRONGREGTYPE
-func Get(implementationAlias string) (impl *DataSource, err *Error) {
-	r, ok := dataSources.Get(implementationAlias)
+func Get(implementationAlias string) (impl DataSourceImplementationFactory, err *Error) {
+	r, ok := dataSourceImplementationFactorys.Get(implementationAlias)
 	if !ok {
 		return nil, NewError(InvalidOperation, ERR_WONTGET)
 	}
-	impl, ok = r.(*DataSource)
+	impl, ok = r.(DataSourceImplementationFactory)
 	if !ok {
 		return nil, NewError(InvalidOperation, ERR_WRONGREGTYPE)
 	}
