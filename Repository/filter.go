@@ -15,3 +15,22 @@
 
 package Repository
 
+// Represents comparrison operator ENUM
+type Operator string
+
+const(
+    EQ Operator = "EQ"  // Equal
+    NE Operator = "NE"  // Not equal
+    IN Operator = "IN"  // In range
+    GE Operator = "GE"  // Greater or equal
+    // TODO(me): Extend with other operators
+)
+
+// Represents ingle predicate as operator + values
+type Predicate struct {
+    Operator
+    Values    []interface{}
+}
+
+// Represents composition of fiels as key and predicates
+type Criteria map[string][]Predicate
