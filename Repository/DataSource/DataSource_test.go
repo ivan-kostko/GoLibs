@@ -28,7 +28,7 @@ func TestGetNewDataSourceAssignedExecuteInstruction(t *testing.T){
     ei := ExecuteInstruction(func(i Instruction) (Result, *Error){ actual = true; return nil,nil})
     ds := GetNewDataSource(ei)
 
-    // Due to complexity of comparing functions (it is possible to compate only their pointers or compare to nil)
+    // Due to complexity of comparing functions (it is possible to compare only their pointers or compare to nil)
     // I'm just checking, that by the end of DataSource.ExecuteInstruction invokation the mock (ei) function is called, which is indicated by setting actual to true
     ds.ExecuteInstruction("")
     if actual != expected {
