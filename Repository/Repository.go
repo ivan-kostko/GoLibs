@@ -21,15 +21,18 @@ import(
 )
 
 const(
-    ERR_FAILEDTOGENERATEINSTRUCTION = "Repository: Failed to generate instruction %s"
+    ERR_FAILEDTOGENERATEINSTRUCTION = "Repository: Failed to generate instruction"
+    ERR_FAILEDTOEXECUTEINSTRUCTION = "Repository: Failed to execute instruction"
+    ERR_FAILEDTOINTERPRETDSRESULT = "Repository: Failed to interpret data source result"
 )
 
 // Represents a data repository abstraction.
 // It is supposed to be an interface to request and retreive entities between domains.
 type Repository struct {
-    dataSource        *ds.DataSource
-    instructor        Instructor
-    checkError        func(*Error) bool
+    dataSource            *ds.DataSource
+    instructor            Instructor
+    resultInterpretator   ResultInterpretator
+    checkError            func(*Error) bool
 }
 
 // An alias for models in domain
@@ -41,6 +44,13 @@ func (rep *Repository) GetAll(fc ...FilteringCondition) ([]DomainModel, *Error){
     if rep.checkError(err) {
         return nil, NewError(InvalidOperation, ERR_FAILEDTOGENERATEINSTRUCTION)
     }
-    rep.dataSource.ExecuteInstruction(instruction)
-    return nil,nil
+    dsResult, err := rep.dataSource.ExecuteInstruction(instruction)
+    if rep.checkError(err) {
+        return nil, NewError(InvalidOperation, ERR_FAILEDTOEXECUTEINSTRUCTION)
+    }
+    models, err := rep.resultInterpretator.Interpret(dsResult)
+    if rep.checkError(err) {
+        return nil, NewError(InvalidOperation, ERR_FAILEDTOINTERPRETDSRESULT)
+    }
+    return models,nil
 }
