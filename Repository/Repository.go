@@ -31,7 +31,7 @@ const(
 type Repository struct {
     dataSource            *ds.DataSource
     instructor            Instructor
-    resultInterpretator   ResultInterpretator
+    resultInterpreter     ResultInterpreter
     checkError            func(*Error) bool
 }
 
@@ -48,7 +48,7 @@ func (rep *Repository) GetAll(fc ...FilteringCondition) ([]DomainModel, *Error){
     if rep.checkError(err) {
         return nil, NewError(InvalidOperation, ERR_FAILEDTOEXECUTEINSTRUCTION)
     }
-    models, err := rep.resultInterpretator.Interpret(dsResult)
+    models, err := rep.resultInterpreter.Interpret(dsResult)
     if rep.checkError(err) {
         return nil, NewError(InvalidOperation, ERR_FAILEDTOINTERPRETDSRESULT)
     }

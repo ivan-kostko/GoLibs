@@ -21,6 +21,6 @@ import(
 )
 
 // Represents service translating datasource result into slice of complete domain entities
-type ResultInterpretator interface{
-    interpret(ds.Result)([]DomainModel, *Error)
+type ResultInterpreter interface{
+    Interpret(ds.Result)([]DomainModel, *Error)
 }
