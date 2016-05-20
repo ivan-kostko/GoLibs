@@ -13,15 +13,34 @@
 //   limitations under the License.
 
 
-// Repository project Repository.go
 package Repository
 
 import(
-    ds "github.com/ivan-kostko/GoLibs/Repository/DataSource"
+    ds "./DataSource"
     . "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 
-type Repository struct {
-    dataSource        ds.DataSource
+const(
+    ERR_FAILEDTOGENERATEINSTRUCTION = "Repository: Failed to generate instruction %s"
+)
 
+// Represents a data repository abstraction.
+// It is supposed to be an interface to request and retreive entities between domains.
+type Repository struct {
+    dataSource        *ds.DataSource
+    instructor        Instructor
+    checkError        func(*Error) bool
+}
+
+// An alias for models in domain
+type DomainModel interface{}
+
+// Retreives all entities conforming FilteringCondition(s)
+func (rep *Repository) GetAll(fc ...FilteringCondition) ([]DomainModel, *Error){
+    instruction, err := rep.instructor.GenerateInstruction(fc...)
+    if rep.checkError(err) {
+        return nil, NewError(InvalidOperation, ERR_FAILEDTOGENERATEINSTRUCTION)
+    }
+    rep.dataSource.ExecuteInstruction(instruction)
+    return nil,nil
 }

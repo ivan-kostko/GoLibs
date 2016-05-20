@@ -15,22 +15,24 @@
 
 package Repository
 
-// Represents comparrison operator ENUM
+// Represents comparison operator ENUM
 type Operator string
 
 const(
-    EQ Operator = "EQ"  // Equal
-    NE Operator = "NE"  // Not equal
+    NOTIN Operator = "NOTIN"  // NOT in range
     IN Operator = "IN"  // In range
     GE Operator = "GE"  // Greater or equal
-    // TODO(me): Extend with other operators
+    GT Operator = "GT"  // Greater than
+    LE Operator = "LE"  // Less or equal
+    LT Operator = "LT"  // Less than
 )
 
-// Represents ingle predicate as operator + values
+// Represents single predicate as operator + value(s)
 type Predicate struct {
     Operator
     Values    []interface{}
 }
 
-// Represents composition of fiels as key and predicates
-type Criteria map[string][]Predicate
+// Represents filtering creteria, which is applied at DataSource instruction. For.Ex. for SQL DataSource it would be converted by Instructor into WHERE clause.
+// It is implemented as composition of fields(key(s)) and predicates(value)
+type FilteringCondition map[string][]Predicate
