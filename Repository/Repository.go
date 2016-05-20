@@ -16,7 +16,7 @@
 package Repository
 
 import(
-    ds "./DataSource"
+    ds "github.com/ivan-kostko/GoLibs/Repository/DataSource"
     . "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 
@@ -53,4 +53,15 @@ func (rep *Repository) GetAll(fc ...FilteringCondition) ([]DomainModel, *Error){
         return nil, NewError(InvalidOperation, ERR_FAILEDTOINTERPRETDSRESULT)
     }
     return models,nil
+}
+
+// Gets complete repository
+func GetNewRepository(dataSource *ds.DataSource, instructor Instructor, resultInterpreter ResultInterpreter, checkError func(*Error) bool) (*Repository){
+    return &Repository{
+        dataSource         : dataSource,
+        instructor         : instructor,
+        resultInterpreter  : resultInterpreter,
+        checkError         : checkError,
+
+    }
 }

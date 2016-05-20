@@ -17,7 +17,7 @@
 package Repository
 
 import(
-    ds "./DataSource"
+    ds "github.com/ivan-kostko/GoLibs/Repository/DataSource"
     . "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 
