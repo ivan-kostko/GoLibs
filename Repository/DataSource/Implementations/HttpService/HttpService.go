@@ -47,7 +47,15 @@ type Configuration struct {
 // NB!: conf should be of type HttpService.Configuration. Otherwise it returns InvalidArgument, ERR_IVALIDCONFTYPE
 func GetNewHttpServiceDataSource(conf interface{}) (*ds.DataSource, *Error) {
     // Try to assert input configuration to custom Cunfiguration type
-    c, ok := conf.(Configuration)
+    c, ok := conf.(struct {
+                        // The url for the service which will be followed by slash "/" and parametrised instructions
+                        MainUrl        string
+                        // The header(s) which will applied to all requests
+
+                        Headers        map[string][]string
+                        // Checks response for http errors
+                        CheckResponse  func(*http.Response) *Error
+                    })
     if !ok {
         return nil, NewError(InvalidArgument, ERR_IVALIDCONFTYPE)
     }
@@ -72,9 +80,8 @@ func GetNewHttpServiceDataSource(conf interface{}) (*ds.DataSource, *Error) {
         	if err != nil {
                 return nil, NewError(InvalidOperation, ERR_WONTINVOKEREQUEST+err.Error())
         	}
-            err = checkResponse(res)
-            if err != nil {
-                return nil, NewError(InvalidOperation, ERR_INVALIDRESPONSE+err.Error())
+            if checkResponse(res) != nil {
+                return nil, NewError(InvalidOperation, ERR_INVALIDRESPONSE)
             }
             result, err := ioutil.ReadAll(res.Body)
         	res.Body.Close()
