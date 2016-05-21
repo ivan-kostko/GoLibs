@@ -16,7 +16,7 @@
 package Implementations
 
 import (
-    . "../../DataSource"
+    . "github.com/ivan-kostko/GoLibs/Repository/DataSource"
     . "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 

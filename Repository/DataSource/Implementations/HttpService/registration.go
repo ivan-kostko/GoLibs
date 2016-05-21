@@ -16,7 +16,7 @@
 package HttpService
 
 import (
-    implementations "../../Implementations"
+    implementations "github.com/ivan-kostko/GoLibs/Repository/DataSource/Implementations"
 )
 
 var registerAs = "BasicHttpService"

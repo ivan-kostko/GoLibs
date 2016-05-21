@@ -18,7 +18,7 @@ package HttpService
 import(
     "io/ioutil"
 	"net/http"
-    ds "../../../DataSource"
+    ds "github.com/ivan-kostko/GoLibs/Repository/DataSource"
     . "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 
