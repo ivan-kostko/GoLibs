@@ -47,15 +47,7 @@ type Configuration struct {
 // NB!: conf should be of type HttpService.Configuration. Otherwise it returns InvalidArgument, ERR_IVALIDCONFTYPE
 func GetNewHttpServiceDataSource(conf interface{}) (*ds.DataSource, *Error) {
     // Try to assert input configuration to custom Cunfiguration type
-    c, ok := conf.(struct {
-                        // The url for the service which will be followed by slash "/" and parametrised instructions
-                        MainUrl        string
-                        // The header(s) which will applied to all requests
-
-                        Headers        map[string][]string
-                        // Checks response for http errors
-                        CheckResponse  func(*http.Response) *Error
-                    })
+    c, ok := conf.(Configuration)
     if !ok {
         return nil, NewError(InvalidArgument, ERR_IVALIDCONFTYPE)
     }
