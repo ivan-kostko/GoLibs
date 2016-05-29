@@ -56,3 +56,14 @@ func (tsm *ThreadSafeMap) Remove(key string) {
 
 	delete(tsm.items, key)
 }
+
+// Returns content as non thread safe map
+func (tsm *ThreadSafeMap) Items() map[string]interface{} {
+	tsm.RLock()
+	defer tsm.RUnlock()
+	x := make(map[string]interface{}, len(tsm.items))
+	for key, value := range tsm.items {
+		x[key] = value
+	}
+	return x
+}
