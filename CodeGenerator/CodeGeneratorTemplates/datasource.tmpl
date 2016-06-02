@@ -1,16 +1,4 @@
-//   Copyright (c) 2016 Ivan A Kostko (github.com/ivan-kostko)
 
-//   Licensed under the Apache License, Version 2.0 (the "License");
-//   you may not use this file except in compliance with the License.
-//   You may obtain a copy of the License at
-
-//       http://www.apache.org/licenses/LICENSE-2.0
-
-//   Unless required by applicable law or agreed to in writing, software
-//   distributed under the License is distributed on an "AS IS" BASIS,
-//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//   See the License for the specific language governing permissions and
-//   limitations under the License.
 
 //// DO NOT EDIT. It is auto-generated code! ////
 
@@ -30,19 +18,18 @@ const (
 )
 
 // Represents data provider.
-// Actualy is a wrapper for net/http Client
 type DataProvider func(Instruction) (Result, *Error)
 
-// Represents translator from FilteringCondition into concreet provider instruction
+// Represents translator from [FilteringCondition](../..#type-filteringcondition) into concreet provider [Instruction](#type-instruction)
 type GetterInstructionGenerator func(fc ds.FilteringCondition) (Instruction, *Error)
 
-// Represents translator from item into concreet provider instruction
+// Represents translator from item into concreet provider [Instruction](#type-instruction)
 type StorerInstructionGenerator func(item interface{}) (Instruction, *Error)
 
-// Represnts converter from Result into DataSource.ResultSet
+// Represnts converter from [Result](#type-result) into [ResultSet](../..#type-resultset)
 type ResultProcessor func(result Result) (ds.ResultSet, *Error)
 
-// {{ .PackageName }} implementation of DataSource interface.
+// {{ .PackageName }} implementation of [DataSource](../..#type-datasource) interface.
 type DataSource struct {
 	getterInstructionGenerator GetterInstructionGenerator
 	storerInstructionGenerator StorerInstructionGenerator
@@ -54,7 +41,7 @@ type DataSource struct {
 	OnCriticalError func(*Error)
 }
 
-// Implements github.com/windelnde/Go-Libs/DataSource GetterDataSource
+// Implements [GetterDataSource](../..#type-getterdatasource)
 func (this *DataSource) Get(fc ds.FilteringCondition) (ds.ResultSet, *Error) {
 	if this.getterInstructionGenerator == nil {
 		return nil, NewError(Nonsupported, ERR_NOTIMPLEMENTEDFUNCTIONALITY)
@@ -67,7 +54,7 @@ func (this *DataSource) Get(fc ds.FilteringCondition) (ds.ResultSet, *Error) {
 	return this.executeInstruction(instruction)
 }
 
-// Implements github.com/windelnde/Go-Libs/DataSource StorerDataSource
+// Implements [StorerDataSource](../..#type-storerdatasource)
 func (this *DataSource) Store(item interface{}) (ds.ResultSet, *Error) {
 	if this.storerInstructionGenerator == nil {
 		return nil, NewError(Nonsupported, ERR_NOTIMPLEMENTEDFUNCTIONALITY)
