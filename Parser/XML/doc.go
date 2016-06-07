@@ -13,15 +13,13 @@
 //   limitations under the License.
 
 /*
-Import
-    "github.com/ivan-kostko/GoLibs/CustomErrors"
-
 Install
-    go get github.com/ivan-kostko/GoLibs/CustomErrors
-
-The package implements extended error functionality, allowing slightly better error handling than golang standart one.
-
-It gives a possibility to define further behaviour based on error type while message contains better error description.
-
+    go get "github.com/ivan-kostko/GoLibs/Parser/XML"
+Import
+    "github.com/ivan-kostko/GoLibs/Parser"
+    _ "github.com/ivan-kostko/GoLibs/Parser/XML"
+Description
+    The Parser/XML package represents assembly of wrappers for XML prsing library(es).
+    It is adapted to interfaces defined at github.com/ivan-kostko/GoLibs/Parser and registers all(included) underlying implementations at Parser.
 */
-package CustomErrors
+package XML

@@ -12,16 +12,16 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-/*
-Import
-    "github.com/ivan-kostko/GoLibs/CustomErrors"
 
-Install
-    go get github.com/ivan-kostko/GoLibs/CustomErrors
+package Implementations
 
-The package implements extended error functionality, allowing slightly better error handling than golang standart one.
+import (
+    . "../../DataSource"
+    . "github.com/ivan-kostko/GoLibs/CustomErrors"
+)
 
-It gives a possibility to define further behaviour based on error type while message contains better error description.
+//go:generate CodeGenerator -template=container -type=DataSourceImplementationFactory
 
-*/
-package CustomErrors
+// Represents genric DataSource implementation factory function
+type DataSourceImplementationFactory func(conf interface{}) (*DataSource, *Error)
+

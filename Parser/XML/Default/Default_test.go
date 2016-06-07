@@ -12,16 +12,22 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-/*
-Import
-    "github.com/ivan-kostko/GoLibs/CustomErrors"
+package Default
 
-Install
-    go get github.com/ivan-kostko/GoLibs/CustomErrors
+import (
+	"testing"
 
-The package implements extended error functionality, allowing slightly better error handling than golang standart one.
+	parsers "github.com/ivan-kostko/GoLibs/Parser"
+)
 
-It gives a possibility to define further behaviour based on error type while message contains better error description.
+func TestInitRegistration(t *testing.T) {
 
-*/
-package CustomErrors
+	p, err := parsers.GetParser(registerAs)
+	if err != nil {
+		t.Errorf("parser.GetParserByFormat(RegisterAs) returned error %v while no error expected", err)
+	}
+	expectedParser := &parser
+	if p != expectedParser {
+		t.Errorf("parser.GetParserByFormat(RegisterAs) returned parser %v while expected %v", p, expectedParser)
+	}
+}

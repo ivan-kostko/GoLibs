@@ -13,15 +13,11 @@
 //   limitations under the License.
 
 /*
-Import
-    "github.com/ivan-kostko/GoLibs/CustomErrors"
 
-Install
-    go get github.com/ivan-kostko/GoLibs/CustomErrors
+###Copyright (c) 2016 Ivan A Kostko (github.com/ivan-kostko)
 
-The package implements extended error functionality, allowing slightly better error handling than golang standart one.
-
-It gives a possibility to define further behaviour based on error type while message contains better error description.
+The repository contains common and generic Golang packages, libraries and frameworks.
+The repository is an acceptor of some code from github.com/ivan-kostko/go-sandbox. For historical changes, please refer to corresponding link provided in commit comment.
 
 */
-package CustomErrors
+package GoLibs
