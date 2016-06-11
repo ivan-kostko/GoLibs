@@ -34,7 +34,7 @@ func New(initCap int) *ThreadSafeMap {
 
 // Wraps the map as ThreadSafe.
 // > You should not use that map as general one anymore. Or just use MakeThreadSafeCopy
-func MakeItThreadSafe(m map[string]interface{}) *ThreadSafeMap {
+func MakeMapThreadSafe(m map[string]interface{}) *ThreadSafeMap {
 	return &ThreadSafeMap{items: m}
 }
 
@@ -62,7 +62,7 @@ func MakeRecursivelyThreadSafeCopy(m map[string]interface{}) *ThreadSafeMap {
 }
 
 // Retrieves an element from map under given key.
-func (tsm ThreadSafeMap) Get(key string) (interface{}, bool) {
+func (tsm *ThreadSafeMap) Get(key string) (interface{}, bool) {
 	tsm.RLock()
 	defer tsm.RUnlock()
 
