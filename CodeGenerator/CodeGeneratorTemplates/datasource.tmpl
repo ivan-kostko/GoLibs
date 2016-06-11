@@ -1,0 +1,82 @@
+
+
+//// DO NOT EDIT. It is auto-generated code! ////
+
+package {{ .PackageName }}
+
+import (
+	"fmt" // just to Sprintf error messages
+	. "github.com/ivan-kostko/GoLibs/CustomErrors"
+	ds "github.com/windelnde/Go-Libs/DataSource"
+)
+
+const (
+	ERR_FAILEDGENERATEINSTRUCTION   = "DataSource/{{ .PackageName }}: Failed to generate instruction due to error: %v"
+	ERR_FAILEDEXECUTEINSTRUCTION    = "DataSource/{{ .PackageName }}: Failed to execute instruction due to error: %v"
+	ERR_FAILEDPROCESSTHERESULT      = "DataSource/{{ .PackageName }}: Failed to process execution result due to error: %v"
+	ERR_NOTIMPLEMENTEDFUNCTIONALITY = "DataSource/{{ .PackageName }}: aparently the functionality is not yet implemented"
+)
+
+// Represents data provider.
+type DataProvider func(Instruction) (Result, *Error)
+
+// Represents translator from [FilteringCondition](../..#type-filteringcondition) into concreet provider [Instruction](#type-instruction)
+type GetterInstructionGenerator func(fc ds.FilteringCondition) (Instruction, *Error)
+
+// Represents translator from item into concreet provider [Instruction](#type-instruction)
+type StorerInstructionGenerator func(item interface{}) (Instruction, *Error)
+
+// Represnts converter from [Result](#type-result) into [ResultSet](../..#type-resultset)
+type ResultProcessor func(result Result) (ds.ResultSet, *Error)
+
+// {{ .PackageName }} implementation of [DataSource](../..#type-datasource) interface.
+type DataSource struct {
+	getterInstructionGenerator GetterInstructionGenerator
+	storerInstructionGenerator StorerInstructionGenerator
+	dataProvider               DataProvider
+	resultProcessor            ResultProcessor
+
+	// It is executed on critical errors. So, it is easy to introduce log,
+	// debug or whatever functionality to catch errors.
+	OnCriticalError func(*Error)
+}
+
+// Implements [GetterDataSource](../..#type-getterdatasource)
+func (this *DataSource) Get(fc ds.FilteringCondition) (ds.ResultSet, *Error) {
+	if this.getterInstructionGenerator == nil {
+		return nil, NewError(Nonsupported, ERR_NOTIMPLEMENTEDFUNCTIONALITY)
+	}
+	instruction, err := this.getterInstructionGenerator(fc)
+	if err != nil {
+		this.OnCriticalError(err)
+		return nil, NewError(InvalidOperation, fmt.Sprintf(ERR_FAILEDGENERATEINSTRUCTION, err))
+	}
+	return this.executeInstruction(instruction)
+}
+
+// Implements [StorerDataSource](../..#type-storerdatasource)
+func (this *DataSource) Store(item interface{}) (ds.ResultSet, *Error) {
+	if this.storerInstructionGenerator == nil {
+		return nil, NewError(Nonsupported, ERR_NOTIMPLEMENTEDFUNCTIONALITY)
+	}
+	instruction, err := this.storerInstructionGenerator(item)
+	if err != nil {
+		this.OnCriticalError(err)
+		return nil, NewError(InvalidOperation, fmt.Sprintf(ERR_FAILEDGENERATEINSTRUCTION, err))
+	}
+	return this.executeInstruction(instruction)
+}
+
+func (this *DataSource) executeInstruction(instruction Instruction) (ds.ResultSet, *Error) {
+	result, err := this.dataProvider(instruction)
+	if err != nil {
+		this.OnCriticalError(err)
+		return nil, NewError(InvalidOperation, fmt.Sprintf(ERR_FAILEDEXECUTEINSTRUCTION, err))
+	}
+	resultSet, err := this.resultProcessor(result)
+	if err != nil {
+		this.OnCriticalError(err)
+		return nil, NewError(InvalidOperation, fmt.Sprintf(ERR_FAILEDEXECUTEINSTRUCTION, err))
+	}
+	return resultSet, nil
+}

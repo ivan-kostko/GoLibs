@@ -18,7 +18,7 @@ package HttpService
 import(
     "io/ioutil"
 	"net/http"
-    ds "../../../DataSource"
+    ds "github.com/ivan-kostko/GoLibs/Repository/DataSource"
     . "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 
@@ -72,9 +72,8 @@ func GetNewHttpServiceDataSource(conf interface{}) (*ds.DataSource, *Error) {
         	if err != nil {
                 return nil, NewError(InvalidOperation, ERR_WONTINVOKEREQUEST+err.Error())
         	}
-            err = checkResponse(res)
-            if err != nil {
-                return nil, NewError(InvalidOperation, ERR_INVALIDRESPONSE+err.Error())
+            if checkResponse(res) != nil {
+                return nil, NewError(InvalidOperation, ERR_INVALIDRESPONSE)
             }
             result, err := ioutil.ReadAll(res.Body)
         	res.Body.Close()
