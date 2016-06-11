@@ -13,6 +13,7 @@
 //   limitations under the License.
 
 /*
+
 Import
     "github.com/ivan-kostko/ThreadSafe/Map"
 
@@ -20,9 +21,9 @@ Install
     go get github.com/ivan-kostko/ThreadSafe/Map
 
 Description
-    The ThreadSafeMap package represents light weight and simple API for thread safe map.
 
-    The functionality is very limited to make it clean and robust. In case of operating on big amounts of data or need of extended functionality - consider to use https://github.com/streamrail/concurrent-map
+The ThreadSafeMap package represents light weight and simple API for thread safe map.
+The functionality is very limited to make it clean and robust. In case of operating on big amounts of data or need of extended functionality - consider to use https://github.com/streamrail/concurrent-map
+
 */
 package Map
-
