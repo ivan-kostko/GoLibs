@@ -63,6 +63,7 @@ func MakeRecursivelyThreadSafeCopy(m map[string]interface{}) *ThreadSafeMap {
 }
 
 // Retrieves an element from map under given key.
+// Returns false in case there is no entry associated with the key
 func (tsm *ThreadSafeMap) Get(key string) (interface{}, bool) {
 	tsm.RLock()
 	defer tsm.RUnlock()
