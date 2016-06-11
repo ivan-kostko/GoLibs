@@ -33,6 +33,7 @@ func New(initCap int) *ThreadSafeMap {
 }
 
 // Wraps the map as ThreadSafe.
+//
 // > You should not use that map as general one anymore. Or just use MakeThreadSafeCopy
 func MakeMapThreadSafe(m map[string]interface{}) *ThreadSafeMap {
 	return &ThreadSafeMap{items: m}
