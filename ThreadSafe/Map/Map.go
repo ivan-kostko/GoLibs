@@ -18,7 +18,7 @@ import (
 	"sync"
 )
 
-// The ThreadSafeMap type represents represents light weight and simple API for thread safe map
+// The ThreadSafeMap type represents light weight and simple API for thread safe map
 //
 // NOTE(x): In case of operating on big amounts of data or need of extended functionality - consider to use https://github.com/streamrail/concurrent-map
 type ThreadSafeMap struct {
@@ -32,8 +32,39 @@ func New(initCap int) *ThreadSafeMap {
 	return &ThreadSafeMap{items: items}
 }
 
+// Wraps the map as ThreadSafe.
+//
+// > You should not use that map as general one anymore. Or just use MakeThreadSafeCopy
+func MakeMapThreadSafe(m map[string]interface{}) *ThreadSafeMap {
+	return &ThreadSafeMap{items: m}
+}
+
+// Makes ThreadSafe copy of the map.
+func MakeThreadSafeCopy(m map[string]interface{}) *ThreadSafeMap {
+	items := make(map[string]interface{}, len(m))
+	for key, value := range m {
+		items[key] = value
+	}
+	return &ThreadSafeMap{items: items}
+}
+
+// Makes ThreadSafe copy of the map recursively.
+// In case the value is map[string]interface{} - it converts it into ThreadSafeMap recursively as well.
+func MakeRecursivelyThreadSafeCopy(m map[string]interface{}) *ThreadSafeMap {
+	items := make(map[string]interface{}, len(m))
+	for key, value := range m {
+		if x, ok := (value).(map[string]interface{}); ok {
+			items[key] = MakeRecursivelyThreadSafeCopy(x)
+		} else {
+			items[key] = value
+		}
+	}
+	return &ThreadSafeMap{items: items}
+}
+
 // Retrieves an element from map under given key.
-func (tsm ThreadSafeMap) Get(key string) (interface{}, bool) {
+// Returns false in case there is no entry associated with the key
+func (tsm *ThreadSafeMap) Get(key string) (interface{}, bool) {
 	tsm.RLock()
 	defer tsm.RUnlock()
 
@@ -49,10 +80,34 @@ func (tsm *ThreadSafeMap) Set(key string, val interface{}) {
 	tsm.items[key] = val
 }
 
+// Sets the given value under the specified key and returns true, if the key didn't exist uppon invokation.
+// Returns false and does nothing, in case there is already an entry with the same key
+func (tsm *ThreadSafeMap) SetIfNotExists(key string, val interface{}) bool {
+	tsm.Lock()
+	defer tsm.Unlock()
+
+	if _, ok := tsm.items[key]; !ok {
+		tsm.items[key] = val
+		return true
+	}
+	return false
+}
+
 // Removes an element from the map.
 func (tsm *ThreadSafeMap) Remove(key string) {
 	tsm.Lock()
 	defer tsm.Unlock()
 
 	delete(tsm.items, key)
+}
+
+// Returns copy of content as non thread safe map
+func (tsm *ThreadSafeMap) Items() map[string]interface{} {
+	tsm.RLock()
+	defer tsm.RUnlock()
+	x := make(map[string]interface{}, len(tsm.items))
+	for key, value := range tsm.items {
+		x[key] = value
+	}
+	return x
 }
