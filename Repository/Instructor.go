@@ -12,18 +12,17 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-/*
 
-Import
-    "github.com/ivan-kostko/ThreadSafe/Map"
+// Repository project Repository.go
+package Repository
 
-Install
-    go get github.com/ivan-kostko/ThreadSafe/Map
+import(
+    ds "github.com/ivan-kostko/GoLibs/Repository/DataSource"
+    . "github.com/ivan-kostko/GoLibs/CustomErrors"
+)
 
-Description
-
-The ThreadSafeMap package represents light weight and simple API for thread safe map.
-The functionality is very limited to make it clean and robust. In case of operating on big amounts of data or need of extended functionality - consider to use https://github.com/streamrail/concurrent-map
-
-*/
-package Map
+// Represents translator responsible for generating DataSource.Instruction
+type Instructor interface{
+    // Translates FilteringCondition(s) into data source instruction
+    GenerateInstruction(...FilteringCondition) (ds.Instruction, *Error)
+}

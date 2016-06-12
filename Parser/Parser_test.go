@@ -32,7 +32,7 @@ func TestGetParser(t *testing.T) {
 	testCases := []struct {
 		RegisteredKey   string
 		RegisteredValue interface{}
-		GetFormat       string
+		GetAlias       string
 		ExpectedParser  *Parser
 		ExpectedError   *Error
 	}{
@@ -61,10 +61,10 @@ func TestGetParser(t *testing.T) {
 
 	for _, testCase := range testCases {
 		parsers.Set(testCase.RegisteredKey, testCase.RegisteredValue)
-		actualParser, actualError := GetParser(testCase.GetFormat)
+		actualParser, actualError := GetParser(testCase.GetAlias)
 		if !(reflect.DeepEqual(actualParser, testCase.ExpectedParser) &&
 			reflect.DeepEqual(actualError, testCase.ExpectedError)) {
-			t.Errorf("GetParserByFormat(%v) returned Parser as %v and Error as %v \r\n\t\t\t while expected Parser as %v and Error as %v", testCase.GetFormat, actualParser, actualError, testCase.ExpectedParser, testCase.ExpectedError)
+			t.Errorf("GetParserByAlias(%v) returned Parser as %v and Error as %v \r\n\t\t\t while expected Parser as %v and Error as %v", testCase.GetAlias, actualParser, actualError, testCase.ExpectedParser, testCase.ExpectedError)
 		}
 		// Reset parsers
 		parsers = tsMap.New(INIT_CAPACITY)
@@ -84,7 +84,7 @@ func TestRegisterParser(t *testing.T) {
 	defaultYAMLParser := &Parser{}
 
 	testCases := []struct {
-		RegisterFormat string
+		RegisterAlias  string
 		RegisterParser *Parser
 		ExpectedParser *Parser
 		ExpectedError  *Error
@@ -117,12 +117,12 @@ func TestRegisterParser(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		actualError := Register(testCase.RegisterFormat, testCase.RegisterParser)
-		parser, _ := parsers.Get(testCase.RegisterFormat)
+		actualError := Register(testCase.RegisterAlias, testCase.RegisterAlias)
+		parser, _ := parsers.Get(testCase.RegisterAlias)
 		actualParser := parser.(*Parser)
 		if !(actualParser == testCase.ExpectedParser &&
 			reflect.DeepEqual(actualError, testCase.ExpectedError)) {
-			t.Errorf("Register( %v, %v ) returned Error %v and assigned Parser %#v, while expected Error %v and assigned Parser %#v ", testCase.RegisterFormat, testCase.RegisterParser, actualError, actualParser, testCase.ExpectedError, testCase.ExpectedParser)
+			t.Errorf("Register( %v, %v ) returned Error %v and assigned Parser %#v, while expected Error %v and assigned Parser %#v ", testCase.RegisterAlias, testCase.RegisterParser, actualError, actualParser, testCase.ExpectedError, testCase.ExpectedParser)
 		}
 
 	}

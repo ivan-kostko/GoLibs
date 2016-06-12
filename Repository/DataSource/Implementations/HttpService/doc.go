@@ -12,18 +12,16 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+
 /*
-
-Import
-    "github.com/ivan-kostko/ThreadSafe/Map"
-
 Install
-    go get github.com/ivan-kostko/ThreadSafe/Map
-
+    go get "github.com/ivan-kostko/GoLibs/Repository/DataSource/Implementations/HttpService"
+Import
+    "github.com/ivan-kostko/GoLibs/Repository/DataSource/Implementations"
+    _ "github.com/ivan-kostko/GoLibs/Repository/DataSource/Implementations/HttpService"
 Description
-
-The ThreadSafeMap package represents light weight and simple API for thread safe map.
-The functionality is very limited to make it clean and robust. In case of operating on big amounts of data or need of extended functionality - consider to use https://github.com/streamrail/concurrent-map
-
+    The package represents generic Http service data source
 */
-package Map
+package HttpService
+
+
