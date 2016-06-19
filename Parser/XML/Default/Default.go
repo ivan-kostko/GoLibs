@@ -26,13 +26,11 @@ import (
 //     go run -ldflags "-X github.com/ivan-kostko/GoLibs/Parser/XML/Default.RegisterAs=BuildTimeAlias" main.go
 var registerAs = "XmlDefault"
 
-var parser = parsers.Parser{Serializer, Deserializer}
-
 func init() {
-	parsers.Register(registerAs, &parser)
+	parsers.Register(registerAs, parsers.NewParser(nil, nil, nil, nil))
 }
 
-func Serializer(in interface{}) ([]byte, *Error) {
+func Serialize(in interface{}) ([]byte, *Error) {
 	b, err := xml.Marshal(in)
 	if err != nil {
 		return nil, NewError(InvalidOperation, err.Error())
@@ -40,7 +38,7 @@ func Serializer(in interface{}) ([]byte, *Error) {
 	return b, nil
 }
 
-func Deserializer(document []byte, dest interface{}) *Error {
+func Deserialize(document []byte, dest interface{}) *Error {
 	err := xml.Unmarshal(document, dest)
 	if err != nil {
 		return NewError(InvalidOperation, err.Error())
