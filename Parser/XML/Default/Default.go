@@ -15,7 +15,8 @@
 package Default
 
 import (
-	"encoding/xml"
+	encoding "encoding/xml"
+	"io"
 
 	. "github.com/ivan-kostko/GoLibs/CustomErrors"
 	parsers "github.com/ivan-kostko/GoLibs/Parser"
@@ -27,11 +28,11 @@ import (
 var registerAs = "XmlDefault"
 
 func init() {
-	parsers.Register(registerAs, parsers.NewParser(nil, nil, nil, nil))
+	parsers.Register(registerAs, parsers.NewParser(Deserialize, Serialize, NewDecoder, NewEncoder))
 }
 
 func Serialize(in interface{}) ([]byte, *Error) {
-	b, err := xml.Marshal(in)
+	b, err := encoding.Marshal(in)
 	if err != nil {
 		return nil, NewError(InvalidOperation, err.Error())
 	}
@@ -39,9 +40,45 @@ func Serialize(in interface{}) ([]byte, *Error) {
 }
 
 func Deserialize(document []byte, dest interface{}) *Error {
-	err := xml.Unmarshal(document, dest)
+	err := encoding.Unmarshal(document, dest)
 	if err != nil {
 		return NewError(InvalidOperation, err.Error())
 	}
 	return nil
+}
+
+// Decoder wrapper
+type Decoder struct {
+	decoder *encoding.Decoder
+}
+
+func (this *Decoder) Decode(in interface{}) *Error {
+
+	err := this.decoder.Decode(in)
+	if err != nil {
+		return NewError(InvalidOperation, err.Error())
+	}
+	return nil
+}
+
+// Decoder wrapper
+type Encoder struct {
+	encoder *encoding.Encoder
+}
+
+func (this *Encoder) Encode(in interface{}) *Error {
+
+	err := this.encoder.Encode(in)
+	if err != nil {
+		return NewError(InvalidOperation, err.Error())
+	}
+	return nil
+}
+
+func NewDecoder(r io.Reader) (parsers.Decoder, *Error) {
+	return &Decoder{decoder: encoding.NewDecoder(r)}, nil
+}
+
+func NewEncoder(w io.Writer) (parsers.Encoder, *Error) {
+	return &Encoder{encoder: encoding.NewEncoder(w)}, nil
 }
