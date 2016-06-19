@@ -18,5 +18,8 @@ import (
 	. "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 
-// Represents generic de-serialization function. Deserializes document into dest according to format
-type Deserializer func(document []byte, dest interface{}) *Error
+// Represents generic de-serialization interface
+type Deserializer interface {
+	// Deserializes document into dest according to format
+	Deserialize(document []byte, dest interface{}) *Error
+}

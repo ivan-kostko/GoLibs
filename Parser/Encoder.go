@@ -15,21 +15,11 @@
 package Parser
 
 import (
-	"io"
-
 	. "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 
-//go:generate CodeGenerator -template=container -type=Parser
-
-// Defines functionality of parser as combination of two functions: Serialize + Deserialize
-type Parser interface {
-	Deserializer
-	Serializer
-
-	// Factory method creating a new Decoder
-	NewDecoder(r io.Reader) (Decoder, *Error)
-
-	// Factory method creating a new Encoder
-	NewEncoder(w io.Writer) (Encoder, *Error)
+// Encoder represents a parser writing into particular stream
+type Encoder interface {
+	// Encode works like [Serializer](#type-serializer), except it writes into encoder stream
+	Encode(v interface{}) *Error
 }
