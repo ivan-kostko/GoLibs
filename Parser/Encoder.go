@@ -12,4 +12,14 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-package Default
+package Parser
+
+import (
+	. "github.com/ivan-kostko/GoLibs/CustomErrors"
+)
+
+// Encoder represents a parser writing into particular stream
+type Encoder interface {
+	// Encode works like [Serializer](#type-serializer), except it writes into encoder stream
+	Encode(v interface{}) *Error
+}

@@ -12,7 +12,6 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-// XML project XML.go
 package XML
 
 import _ "github.com/ivan-kostko/GoLibs/Parser/XML/Default"

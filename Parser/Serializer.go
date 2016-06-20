@@ -18,5 +18,8 @@ import (
 	. "github.com/ivan-kostko/GoLibs/CustomErrors"
 )
 
-// Represents generic serialization function. Serializes in into []byte according to format
-type Serializer func(in interface{}) ([]byte, *Error)
+// Represents generic serialization function.
+type Serializer interface {
+	// Serializes in into []byte according to format
+	Serialize(in interface{}) ([]byte, *Error)
+}

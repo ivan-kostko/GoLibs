@@ -12,4 +12,14 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-package Default
+package Parser
+
+import (
+	. "github.com/ivan-kostko/GoLibs/CustomErrors"
+)
+
+// A Decoder represents a parser reading a particular input stream
+type Decoder interface {
+	// Decode works like [Deserializer](#type-deserializer), except it reads the decoder stream
+	Decode(v interface{}) *Error
+}

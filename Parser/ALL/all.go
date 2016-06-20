@@ -12,4 +12,9 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-package Default
+package all
+
+import (
+	_ "github.com/ivan-kostko/GoLibs/Parser/JSON"
+	_ "github.com/ivan-kostko/GoLibs/Parser/XML"
+)

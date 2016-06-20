@@ -12,4 +12,20 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+/*
+Install
+
+    go get "github.com/ivan-kostko/GoLibs/Parser/JSON/Default"
+
+Import
+
+    "github.com/ivan-kostko/GoLibs/Parser"
+    _ "github.com/ivan-kostko/GoLibs/Parser/JSON/Default"
+
+Description
+
+The Parser/JSON/Default package represents wrapper for encoding/json Go standard package.
+It adapts standard lib to interfaces defined at github.com/ivan-kostko/GoLibs/Parser and registers underlying parser implementation at github.com/ivan-kostko/GoLibs/Parser.
+
+*/
 package Default
