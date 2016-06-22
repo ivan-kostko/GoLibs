@@ -25,7 +25,7 @@ import (
 // The implementation alias which is provided to github.com/ivan-kostko/GoLibs/Parser.Register()
 // It declared as package private variable for abbility to overide it at build time with the following build/run flags:
 //     go run -ldflags "-X github.com/ivan-kostko/GoLibs/Parser/JSON/Default.RegisterAs=BuildTimeAlias" main.go
-var registerAs = "XmlDefault"
+var registerAs = "JsonDefault"
 
 func init() {
 	parsers.Register(registerAs, parsers.NewParser(Deserialize, Serialize, NewDecoder, NewEncoder))
