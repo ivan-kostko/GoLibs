@@ -12,16 +12,16 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-/*
-Import
-    "github.com/ivan-kostko/GoLibs/CustomErrors"
+package Logger
 
-Install
-    go get github.com/ivan-kostko/GoLibs/CustomErrors
+import (
+	"fmt"
+)
 
-The package implements extended error functionality, allowing slightly better error handling than golang standart one.
+func GetStdTerminalLogger() ILogger {
+	return GetNewLogAdapter(stdLogToTerminal)
+}
 
-It gives a possibility to define further behaviour based on error type while message contains better error description.
-
-*/
-package CustomErrors
+func stdLogToTerminal(level Level, args ...interface{}) {
+	fmt.Println(level.String(), args)
+}

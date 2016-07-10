@@ -13,15 +13,16 @@
 //   limitations under the License.
 
 /*
-Import
-    "github.com/ivan-kostko/GoLibs/CustomErrors"
-
+Description
+    Package Logger provides a common interface and wrapper implementation for logging libraries.
+    Contains predefined loggers: StderrLogger(prints error log to Std out)
+NB:
+    For the moment the package is in development(see TODOs).
+    Currently, due to possible changes, it is recommended not to use anything from the package,
+    except ILogger interface.
 Install
-    go get github.com/ivan-kostko/GoLibs/CustomErrors
-
-The package implements extended error functionality, allowing slightly better error handling than golang standart one.
-
-It gives a possibility to define further behaviour based on error type while message contains better error description.
-
+    go get "github.com/ivan-kostko/GoLibs/Logger"
+Import
+    "github.com/ivan-kostko/GoLibs/Logger"
 */
-package CustomErrors
+package Logger

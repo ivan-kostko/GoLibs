@@ -12,16 +12,14 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-/*
-Import
-    "github.com/ivan-kostko/GoLibs/CustomErrors"
+package Parser
 
-Install
-    go get github.com/ivan-kostko/GoLibs/CustomErrors
+import (
+	. "github.com/ivan-kostko/GoLibs/CustomErrors"
+)
 
-The package implements extended error functionality, allowing slightly better error handling than golang standart one.
-
-It gives a possibility to define further behaviour based on error type while message contains better error description.
-
-*/
-package CustomErrors
+// A Decoder represents a parser reading a particular input stream
+type Decoder interface {
+	// Decode works like [Deserializer](#type-deserializer), except it reads the decoder stream
+	Decode(v interface{}) *Error
+}

@@ -12,16 +12,26 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-/*
-Import
-    "github.com/ivan-kostko/GoLibs/CustomErrors"
 
-Install
-    go get github.com/ivan-kostko/GoLibs/CustomErrors
+package main
 
-The package implements extended error functionality, allowing slightly better error handling than golang standart one.
+import (
+	"text/template"
+    "io"
+)
 
-It gives a possibility to define further behaviour based on error type while message contains better error description.
+type Generator struct {
+	tmpl *template.Template
+}
 
-*/
-package CustomErrors
+// Generator factory
+func NewGenerator(tmpl *template.Template) *Generator {
+    return &Generator{tmpl:    tmpl}
+}
+
+// Generates output into writer applying metadata to Generator template
+func (g *Generator) Generate(writer io.Writer, metadata Metadata) error {
+
+	return g.tmpl.Execute(writer, metadata)
+}
+

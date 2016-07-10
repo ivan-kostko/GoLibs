@@ -13,15 +13,19 @@
 //   limitations under the License.
 
 /*
-Import
-    "github.com/ivan-kostko/GoLibs/CustomErrors"
-
 Install
-    go get github.com/ivan-kostko/GoLibs/CustomErrors
 
-The package implements extended error functionality, allowing slightly better error handling than golang standart one.
+    go get "github.com/ivan-kostko/GoLibs/Parser/JSON"
 
-It gives a possibility to define further behaviour based on error type while message contains better error description.
+Import
+
+    "github.com/ivan-kostko/GoLibs/Parser"
+    _ "github.com/ivan-kostko/GoLibs/Parser/JSON"
+
+Description
+
+The Parser/JSON package represents assembly of wrappers for JSON parsing library(es).
+It is adapted to interfaces defined at github.com/ivan-kostko/GoLibs/Parser and registers all(included) underlying implementations at Parser container.
 
 */
-package CustomErrors
+package JSON
