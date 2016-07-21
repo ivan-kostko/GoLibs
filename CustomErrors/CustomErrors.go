@@ -49,3 +49,9 @@ func NewError(typ ErrorType, msg string) *Error {
 		Message: msg,
 	}
 }
+
+// Error factory generating message in fmt.Sprintf manner
+func NewErrorF(typ ErrorType, baseMsg string, args ...interface{}) *Error {
+	msg := fmt.Sprintf(baseMsg, args...)
+	return NewError(typ, msg)
+}
