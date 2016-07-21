@@ -41,10 +41,9 @@ var {{ .PrivTypeName }}s = tsMap.New(INIT_CAPACITY)
 // For.Ex. having registered "SomeImplementation" + Some{{ .TypeName }}, registration of "SomeImplementation" + New{{ .TypeName }} returns ERR_ALREADYREGISTERED error,
 // keeping initial registration (SomeFormat + Some{{ .TypeName }}) w/o changes and available for further use.
 func Register(implementationAlias string, impl {{ .FullTypeName }}) *Error {
-	if _, ok := {{ .PrivTypeName }}s.Get(implementationAlias); ok {
+	if ok := {{ .PrivTypeName }}s.SetIfNotExists(implementationAlias, impl); !ok {
 		return NewError(InvalidOperation, ERR_ALREADYREGISTERED)
 	}
-	{{ .PrivTypeName }}s.Set(implementationAlias, impl)
 	return nil
 }
 
