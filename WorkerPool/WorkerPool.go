@@ -33,17 +33,17 @@ type workerPool struct {
 // A new Deapertment Factory
 func NewDepartment(initWorkerNumber int) WorkerPool {
 	// instantiate  pool
-	workersPool := make(chan struct{}, initWorkerNumber)
+	workersChan := make(chan struct{}, initWorkerNumber)
 
 	// fill up pool
 	// for each initially empty slot we shoul put one value
 	for i := 0; i < initWorkerNumber; i++ {
-		workersPool <- struct{}{}
+		workersChan <- struct{}{}
 	}
 
 	return &workerPool{
 		isShuttingDown: false,
-		workersChan:    workersPool,
+		workersChan:    workersChan,
 	}
 
 }
