@@ -26,8 +26,9 @@ type WorkerPool interface {
 
 // Private custom  implementation of department
 type workerPool struct {
-	isShuttingDown bool
-	workersChan    chan struct{}
+	isShuttingDown   bool
+	workersChan      chan struct{}
+	cancellationChan chan struct{}
 }
 
 // A new Deapertment Factory
@@ -41,9 +42,13 @@ func NewDepartment(initWorkerNumber int) WorkerPool {
 		workersChan <- struct{}{}
 	}
 
+	// chan to notify processes on closing pool
+	cancellationChan := make(chan struct{})
+
 	return &workerPool{
-		isShuttingDown: false,
-		workersChan:    workersChan,
+		isShuttingDown:   false,
+		workersChan:      workersChan,
+		cancellationChan: cancellationChan,
 	}
 
 }
@@ -62,12 +67,14 @@ func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 		if !t.Stop() {
 			<-t.C
 		}
+	// The channel will be only closed
+	case _ = <-this.cancellationChan:
+		if !t.Stop() {
+			<-t.C
+		}
+		return errors.New(ERR_DEPARTMENTSHUTDOWN)
 	case _ = <-t.C:
 		return errors.New(ERR_TIMEDOUTREQUSTSLOT)
-	}
-
-	if this.isShuttingDown {
-		return errors.New(ERR_DEPARTMENTSHUTDOWN)
 	}
 
 	go func() {
@@ -80,6 +87,9 @@ func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 
 func (this *workerPool) Close() {
 	this.isShuttingDown = true
+
+	// notify those who are actually waiting about closing
+	close(this.cancellationChan)
 
 	// wait while all left assignments are done
 	for i := 0; i < cap(this.workersChan); i++ {

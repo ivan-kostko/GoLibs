@@ -123,15 +123,14 @@ func Test_DepartmentDoWorkersLimit(t *testing.T) {
 				}
 			}()
 
+			timeOut := time.Duration(10000000)
+
 			for i := 0; i < startWorkerNumber; i++ {
-				reportStart := make(chan struct{})
-				go func() { reportStart <- struct{}{}; dep.Do(func() { started <- struct{}{}; <-block }, 10) }()
-				<-reportStart
-				close(reportStart)
+				dep.Do(func() { started <- struct{}{}; <-block }, timeOut)
 			}
 
-			// to be sure all workers reported their start
-			time.Sleep(1000)
+			// Sleep for all timeouts
+			time.Sleep(timeOut * time.Duration(initWorkerNumber))
 
 			actualStartedWorkers := actualWorkerNumber
 
@@ -222,17 +221,16 @@ func Test_DepartmentDoProcessAllWorkers(t *testing.T) {
 				}
 			}()
 
-			for i := 0; i < startWorkerNumber; i++ {
-				go func() {
-					dep.Do(func() {
-						done <- struct{}{}
-					}, 100000000)
+			timeOut := time.Duration(10000000)
 
-				}()
+			for i := 0; i < startWorkerNumber; i++ {
+				dep.Do(func() {
+					done <- struct{}{}
+				}, timeOut)
 			}
 
-			// Give a bit time to start workers
-			time.Sleep(100000000)
+			// Sleep for all timeouts
+			time.Sleep(timeOut * time.Duration(initWorkerNumber))
 
 			// wait while all left assignments are done
 			actualDoneWorkers := actualWorkerDone
@@ -324,7 +322,7 @@ func Test_DepartmentClose(t *testing.T) {
 			}
 
 			// to be sure all workers reported their start
-			time.Sleep(1000)
+			time.Sleep(time.Duration(10 * initWorkerNumber))
 
 			go dep.Close()
 
