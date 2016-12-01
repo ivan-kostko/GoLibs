@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func Test_NewDepartment(t *testing.T) {
+func Test_NewWorkerPool(t *testing.T) {
 	testCases := []struct {
 		TestAlias            string
 		InitWorkerNumber     int
@@ -33,24 +33,24 @@ func Test_NewDepartment(t *testing.T) {
 		expectedChanCapacity := testCase.ExpectedChanCapacity
 
 		fn := func(t *testing.T) {
-			id := NewDepartment(initWorkerNumber)
+			id := NewWorkerPool(initWorkerNumber)
 
 			d, ok := id.(*workerPool)
 
 			if !ok {
-				t.Skipf("\r\n For TestAlias: '%s' the NewDepartment(%v)  returned unknown implementation of Department inteface\r\n", initWorkerNumber, testAlias)
+				t.Skipf("\r\n For TestAlias: '%s' the NewWorkerPool(%v)  returned unknown implementation of WorkerPool inteface\r\n", initWorkerNumber, testAlias)
 			}
 
 			actualWorkerNumber := len(d.workersChan)
 
 			if actualWorkerNumber != expectedWorkerNumber {
-				t.Errorf("\r\n For TestAlias: '%s' the NewDepartment(%v)  returned department{} \r\n with numberOfWorkers = %v \r\n while expected %v \r\n", testAlias, initWorkerNumber, actualWorkerNumber, expectedWorkerNumber)
+				t.Errorf("\r\n For TestAlias: '%s' the NewWorkerPool(%v)  returned department{} \r\n with numberOfWorkers = %v \r\n while expected %v \r\n", testAlias, initWorkerNumber, actualWorkerNumber, expectedWorkerNumber)
 			}
 
 			actualChanCapacity := cap(d.workersChan)
 
 			if actualChanCapacity != expectedChanCapacity {
-				t.Errorf("\r\n For TestAlias: '%s' the NewDepartment(%v)  returned department{} \r\n with workersPool cap = %v \r\n while expected %v \r\n", testAlias, initWorkerNumber, actualChanCapacity, expectedChanCapacity)
+				t.Errorf("\r\n For TestAlias: '%s' the NewWorkerPool(%v)  returned department{} \r\n with workersPool cap = %v \r\n while expected %v \r\n", testAlias, initWorkerNumber, actualChanCapacity, expectedChanCapacity)
 			}
 
 		}
@@ -59,7 +59,7 @@ func Test_NewDepartment(t *testing.T) {
 	}
 }
 
-func Test_DepartmentDoWorkersLimit(t *testing.T) {
+func Test_WorkerPoolDoWorkersLimit(t *testing.T) {
 
 	testCases := []struct {
 		TestAlias              string
@@ -107,7 +107,7 @@ func Test_DepartmentDoWorkersLimit(t *testing.T) {
 			// chanel workes are waiting for close
 			block := make(chan struct{})
 
-			dep := NewDepartment(initWorkerNumber)
+			dep := NewWorkerPool(initWorkerNumber)
 
 			actualWorkerNumber := 0
 
@@ -138,7 +138,7 @@ func Test_DepartmentDoWorkersLimit(t *testing.T) {
 			close(block)
 
 			if actualStartedWorkers != expectedStartedWorkers {
-				t.Errorf("For TestAlias '%s' Department.Do()  \r\n started %v workers \r\n while expected %v \r\n", testAlias, actualStartedWorkers, expectedStartedWorkers)
+				t.Errorf("For TestAlias '%s' WorkerPool.Do()  \r\n started %v workers \r\n while expected %v \r\n", testAlias, actualStartedWorkers, expectedStartedWorkers)
 			}
 		}
 		t.Run(testAlias, fn)
@@ -146,7 +146,7 @@ func Test_DepartmentDoWorkersLimit(t *testing.T) {
 
 }
 
-func Test_DepartmentDoProcessAllWorkers(t *testing.T) {
+func Test_WorkerPoolDoProcessAllWorkers(t *testing.T) {
 
 	testCases := []struct {
 		TestAlias            string
@@ -203,7 +203,7 @@ func Test_DepartmentDoProcessAllWorkers(t *testing.T) {
 			// the chanel where workers report about done
 			done := make(chan struct{})
 
-			dep := NewDepartment(initWorkerNumber)
+			dep := NewWorkerPool(initWorkerNumber)
 
 			actualWorkerDone := 0
 
@@ -236,7 +236,7 @@ func Test_DepartmentDoProcessAllWorkers(t *testing.T) {
 			actualDoneWorkers := actualWorkerDone
 
 			if actualDoneWorkers != expectedDoneWorkers {
-				t.Errorf("For TestAlias '%s' Department.Do()  \r\n has done %v workers \r\n while expected %v \r\n", testAlias, actualDoneWorkers, expectedDoneWorkers)
+				t.Errorf("For TestAlias '%s' WorkerPool.Do()  \r\n has done %v workers \r\n while expected %v \r\n", testAlias, actualDoneWorkers, expectedDoneWorkers)
 			}
 		}
 		t.Run(testAlias, fn)
@@ -244,7 +244,7 @@ func Test_DepartmentDoProcessAllWorkers(t *testing.T) {
 
 }
 
-func Test_DepartmentClose(t *testing.T) {
+func Test_WorkerPoolClose(t *testing.T) {
 
 	testCases := []struct {
 		TestAlias           string
@@ -298,7 +298,7 @@ func Test_DepartmentClose(t *testing.T) {
 			// chanel workes are waiting for close
 			block := make(chan struct{})
 
-			dep := NewDepartment(initWorkerNumber)
+			dep := NewWorkerPool(initWorkerNumber)
 
 			actualWorkerNumber := 0
 
@@ -332,7 +332,7 @@ func Test_DepartmentClose(t *testing.T) {
 			actualDoneWorkers := actualWorkerNumber
 
 			if actualDoneWorkers != expectedDoneWorkers {
-				t.Errorf("For TestAlias '%s' Department.Do() with immidiate Department.Close() \r\n done %v workers \r\n while expected %v \r\n", testAlias, actualDoneWorkers, expectedDoneWorkers)
+				t.Errorf("For TestAlias '%s' WorkerPool.Do() with immidiate WorkerPool.Close() \r\n done %v workers \r\n while expected %v \r\n", testAlias, actualDoneWorkers, expectedDoneWorkers)
 			}
 		}
 		t.Run(testAlias, fn)

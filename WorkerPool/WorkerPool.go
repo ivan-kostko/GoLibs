@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	ERR_DEPARTMENTSHUTDOWN = "The department is shutting down and wont take new assignments"
+	ERR_WORKERPOOLSHUTDOWN = "The worker pool is shutting down and wont take new assignments"
 	ERR_TIMEDOUTREQUSTSLOT = "The request for a free execution slot has been timed out"
 )
 
@@ -20,11 +20,11 @@ type WorkerPool interface {
 	// If no slot aquired upon timeOut exceeds - returns ERR_TIMEDOUTREQUSTSLOT
 	Do(wi WorkItem, timeOut time.Duration) error
 
-	// Closes the department
+	// Closes the worker pool
 	Close()
 }
 
-// Private custom  implementation of department
+// Private custom  implementation of worker pool
 type workerPool struct {
 	isShuttingDown   bool
 	workersChan      chan struct{}
@@ -32,7 +32,7 @@ type workerPool struct {
 }
 
 // A new Deapertment Factory
-func NewDepartment(initWorkerNumber int) WorkerPool {
+func NewWorkerPool(initWorkerNumber int) WorkerPool {
 	// instantiate  pool
 	workersChan := make(chan struct{}, initWorkerNumber)
 
@@ -53,11 +53,11 @@ func NewDepartment(initWorkerNumber int) WorkerPool {
 
 }
 
-// Implements Department.Do(wi WorkItem) method
+// Implements WorkerPool.Do(wi WorkItem) method
 func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 
 	if this.isShuttingDown {
-		return errors.New(ERR_DEPARTMENTSHUTDOWN)
+		return errors.New(ERR_WORKERPOOLSHUTDOWN)
 	}
 
 	t := time.NewTimer(timeOut)
@@ -72,7 +72,7 @@ func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 		if !t.Stop() {
 			<-t.C
 		}
-		return errors.New(ERR_DEPARTMENTSHUTDOWN)
+		return errors.New(ERR_WORKERPOOLSHUTDOWN)
 	case _ = <-t.C:
 		return errors.New(ERR_TIMEDOUTREQUSTSLOT)
 	}
