@@ -10,34 +10,38 @@ const (
 	ERR_TIMEDOUTREQUSTSLOT = "The request for a free execution slot has been timed out"
 )
 
-// Represents simple assignment
+// Represents simple assignment.
 type WorkItem func()
 
-// Represents simple workers pool operating on Projects and WorkITems
+// Represents simple workers pool operating on Projects and WorkItems.
 type WorkerPool interface {
 
-	// Synchronously requests worker slot and end exectes/does WorkItem in parallel routine as soon as slot is obtained
-	// If no slot aquired upon timeOut exceeds - returns ERR_TIMEDOUTREQUSTSLOT
+	// Synchronously requests worker slot and end exectes/does WorkItem in parallel routine as soon as slot is obtained.
+	// If no slot aquired upon timeOut exceeds - returns ERR_TIMEDOUTREQUSTSLOT.
+	// If worker pool is already closed or closing while obtaining worker slot - return ERR_WORKERPOOLSHUTDOWN.
 	Do(wi WorkItem, timeOut time.Duration) error
 
-	// Closes the worker pool
+	// Closes the worker pool.
+	// All new requests will be rejected returning ERR_WORKERPOOLSHUTDOWN.
+	// All requests waiting for slots should be notified and canceled returning ERR_WORKERPOOLSHUTDOWN.
+	// Processes already obtained their own slot shouldn't be affected and complete normal.
 	Close()
 }
 
-// Private custom  implementation of worker pool
+// Private custom  implementation of worker pool.
 type workerPool struct {
 	isShuttingDown   bool
 	workersChan      chan struct{}
 	cancellationChan chan struct{}
 }
 
-// A new Deapertment Factory
+// A new WorkerPool Factory.
 func NewWorkerPool(initWorkerNumber int) WorkerPool {
 	// instantiate  pool
 	workersChan := make(chan struct{}, initWorkerNumber)
 
 	// fill up pool
-	// for each initially empty slot we shoul put one value
+	// for each initially empty slot we should put one value
 	for i := 0; i < initWorkerNumber; i++ {
 		workersChan <- struct{}{}
 	}

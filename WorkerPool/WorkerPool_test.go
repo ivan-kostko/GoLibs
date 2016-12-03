@@ -1,6 +1,7 @@
 package WorkerPool
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -134,7 +135,7 @@ func Test_WorkerPoolDoWorkersLimit(t *testing.T) {
 
 			actualStartedWorkers := actualWorkerNumber
 
-			// cancell workers
+			// cancel workers
 			close(block)
 
 			if actualStartedWorkers != expectedStartedWorkers {
@@ -322,7 +323,7 @@ func Test_WorkerPoolClose(t *testing.T) {
 			}
 
 			// to be sure all workers reported their start
-			time.Sleep(time.Duration(10 * initWorkerNumber))
+			time.Sleep(time.Duration(10 * startWorkerNumber))
 
 			go dep.Close()
 
@@ -333,6 +334,228 @@ func Test_WorkerPoolClose(t *testing.T) {
 
 			if actualDoneWorkers != expectedDoneWorkers {
 				t.Errorf("For TestAlias '%s' WorkerPool.Do() with immidiate WorkerPool.Close() \r\n done %v workers \r\n while expected %v \r\n", testAlias, actualDoneWorkers, expectedDoneWorkers)
+			}
+		}
+		t.Run(testAlias, fn)
+	}
+
+}
+
+func Test_ErrorOnTimeOut(t *testing.T) {
+
+	blockingFuncTimeout := time.Duration(1000)
+
+	testCases := []struct {
+		TestAlias          string
+		InitWorkerNumber   int
+		StartBlockedWorker int
+		TimeOut            time.Duration
+		ExpectedError      error
+	}{
+		{
+			TestAlias:          "Generic One",
+			InitWorkerNumber:   10,
+			StartBlockedWorker: 10,
+			TimeOut:            10,
+			ExpectedError:      errors.New("The request for a free execution slot has been timed out"),
+		},
+		{
+			TestAlias:          "Generic One",
+			InitWorkerNumber:   10,
+			StartBlockedWorker: 9,
+			TimeOut:            100,
+			ExpectedError:      nil,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testAlias := testCase.TestAlias
+		initWorkerNumber := testCase.InitWorkerNumber
+		startBlockedWorker := testCase.StartBlockedWorker
+		timeOut := testCase.TimeOut
+		expectedError := testCase.ExpectedError
+
+		fn := func(t *testing.T) {
+
+			// chanel workes are waiting for close
+			block := make(chan struct{})
+
+			dep := NewWorkerPool(initWorkerNumber)
+
+			for i := 0; i < startBlockedWorker; i++ {
+				reportStart := make(chan struct{})
+				go func() { reportStart <- struct{}{}; dep.Do(func() { <-block }, blockingFuncTimeout) }()
+				<-reportStart
+				close(reportStart)
+			}
+
+			// to be sure all workers managed to start
+			time.Sleep(time.Duration(10 * startBlockedWorker))
+
+			actualError := dep.Do(func() { <-block }, timeOut)
+
+			// stop blocking workers
+			close(block)
+
+			if !((actualError == nil && expectedError == nil) ||
+				(actualError != nil && expectedError != nil &&
+					actualError.Error() == expectedError.Error())) {
+				t.Errorf("For TestAlias '%s' WorkerPool.Do() with Timeout \r\n returned %v Error \r\n while expected %v \r\n", testAlias, actualError, expectedError)
+			}
+		}
+		t.Run(testAlias, fn)
+	}
+
+}
+
+func Test_ErrorOnClosingWhileObtainingSlot(t *testing.T) {
+
+	testCases := []struct {
+		TestAlias          string
+		InitWorkerNumber   int
+		StartBlockedWorker int
+		TimeOut            time.Duration // Keep TimeOut duration with enough room
+		ExpectedError      error
+	}{
+		{
+			TestAlias:          "Generic 10/10/100",
+			InitWorkerNumber:   10,
+			StartBlockedWorker: 10,
+			TimeOut:            1000000,
+			ExpectedError:      errors.New("The worker pool is shutting down and wont take new assignments"),
+		},
+		{
+			TestAlias:          "Generic 10/9/100",
+			InitWorkerNumber:   10,
+			StartBlockedWorker: 9,
+			TimeOut:            1000000,
+			ExpectedError:      nil,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testAlias := testCase.TestAlias
+		initWorkerNumber := testCase.InitWorkerNumber
+		startBlockedWorker := testCase.StartBlockedWorker
+		timeOut := testCase.TimeOut
+		expectedError := testCase.ExpectedError
+
+		fn := func(t *testing.T) {
+
+			// chanel workes are waiting for close
+			block := make(chan struct{})
+
+			dep := NewWorkerPool(initWorkerNumber)
+
+			for i := 0; i < startBlockedWorker; i++ {
+				reportStart := make(chan struct{})
+				go func() { reportStart <- struct{}{}; dep.Do(func() { <-block }, 10) }()
+				<-reportStart
+				close(reportStart)
+			}
+
+			// to be sure all workers managed to start
+			time.Sleep(time.Duration(10 * startBlockedWorker))
+
+			actualError := error(nil)
+
+			gocha := make(chan struct{})
+
+			reportStart := make(chan struct{})
+			go func() {
+				close(reportStart)
+				actualError = dep.Do(func() { <-block }, timeOut)
+				close(gocha)
+			}()
+
+			<-reportStart
+
+			closed := make(chan struct{})
+			go func() { dep.Close(); close(closed) }()
+
+			<-gocha
+
+			// stop blocking workers
+			go close(block)
+
+			<-closed
+
+			if !((actualError == nil && expectedError == nil) ||
+				(actualError != nil && expectedError != nil &&
+					actualError.Error() == expectedError.Error())) {
+				t.Errorf("For TestAlias '%s' WorkerPool.Do() waiting for a slot while WP is closing \r\n returned %v Error \r\n while expected %v \r\n", testAlias, actualError, expectedError)
+			}
+		}
+		t.Run(testAlias, fn)
+	}
+
+}
+
+func Test_ErrorOnObtainingSlotAfterClosing(t *testing.T) {
+
+	testCases := []struct {
+		TestAlias          string
+		InitWorkerNumber   int
+		StartBlockedWorker int
+		TimeOut            time.Duration
+		ExpectedError      error
+	}{
+		{
+			TestAlias:          "Generic 10/10/10",
+			InitWorkerNumber:   10,
+			StartBlockedWorker: 10,
+			TimeOut:            10,
+			ExpectedError:      errors.New("The worker pool is shutting down and wont take new assignments"),
+		},
+		{
+			TestAlias:          "Generic 10/9/10",
+			InitWorkerNumber:   10,
+			StartBlockedWorker: 9,
+			TimeOut:            10,
+			ExpectedError:      errors.New("The worker pool is shutting down and wont take new assignments"),
+		},
+	}
+
+	for _, testCase := range testCases {
+		testAlias := testCase.TestAlias
+		initWorkerNumber := testCase.InitWorkerNumber
+		startBlockedWorker := testCase.StartBlockedWorker
+		timeOut := testCase.TimeOut
+		expectedError := testCase.ExpectedError
+
+		fn := func(t *testing.T) {
+
+			// chanel workes are waiting for close
+			block := make(chan struct{})
+
+			dep := NewWorkerPool(initWorkerNumber)
+
+			for i := 0; i < startBlockedWorker; i++ {
+				reportStart := make(chan struct{})
+				go func() { close(reportStart); dep.Do(func() { <-block }, 10) }()
+				<-reportStart
+			}
+
+			// to be sure all workers managed to start
+			time.Sleep(time.Duration(10 * startBlockedWorker))
+
+			reportStart := make(chan struct{})
+			closed := make(chan struct{})
+			go func() { close(reportStart); dep.Close(); close(closed) }()
+
+			<-reportStart
+
+			actualError := dep.Do(func() { <-block }, timeOut)
+
+			// stop blocking workers
+			go close(block)
+
+			<-closed
+
+			if !((actualError == nil && expectedError == nil) ||
+				(actualError != nil && expectedError != nil &&
+					actualError.Error() == expectedError.Error())) {
+				t.Errorf("For TestAlias '%s' WorkerPool.Do() right after WP is closing \r\n returned %v Error \r\n while expected %v \r\n", testAlias, actualError, expectedError)
 			}
 		}
 		t.Run(testAlias, fn)
