@@ -253,6 +253,7 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 		StartWorkerNumber               int
 		ExpectedWorkerChanLen           int
 		ExpectedIsCancelationChanClosed bool
+		ExpectedIsWorkersChanClosed     bool
 	}{
 		{
 			TestAlias:                       "20 work items for 0 workers",
@@ -260,6 +261,7 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 			StartWorkerNumber:               20,
 			ExpectedWorkerChanLen:           0,
 			ExpectedIsCancelationChanClosed: true,
+			ExpectedIsWorkersChanClosed:     true,
 		},
 		{
 			TestAlias:                       "1 work item for 1 worker",
@@ -267,6 +269,7 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 			StartWorkerNumber:               1,
 			ExpectedWorkerChanLen:           0,
 			ExpectedIsCancelationChanClosed: true,
+			ExpectedIsWorkersChanClosed:     true,
 		},
 		{
 			TestAlias:                       "1 work item for 10 workers",
@@ -274,6 +277,7 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 			StartWorkerNumber:               1,
 			ExpectedWorkerChanLen:           0,
 			ExpectedIsCancelationChanClosed: true,
+			ExpectedIsWorkersChanClosed:     true,
 		},
 		{
 			TestAlias:                       "20 work items for 16 workers",
@@ -281,6 +285,7 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 			StartWorkerNumber:               20,
 			ExpectedWorkerChanLen:           0,
 			ExpectedIsCancelationChanClosed: true,
+			ExpectedIsWorkersChanClosed:     true,
 		},
 		{
 			TestAlias:                       "200 work items for 16 workers",
@@ -288,6 +293,7 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 			StartWorkerNumber:               200,
 			ExpectedWorkerChanLen:           0,
 			ExpectedIsCancelationChanClosed: true,
+			ExpectedIsWorkersChanClosed:     true,
 		},
 	}
 
@@ -297,6 +303,7 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 		startWorkerNumber := testCase.StartWorkerNumber
 		expectedWorkerChanLen := testCase.ExpectedWorkerChanLen
 		expectedIsCancelationChanClosed := testCase.ExpectedIsCancelationChanClosed
+		expectedIsWorkersChanClosed := testCase.ExpectedIsWorkersChanClosed
 
 		fn := func(t *testing.T) {
 
@@ -333,12 +340,22 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 				actualIsCancelationChanClosed = true
 			}
 
+			var actualIsWorkersChanClosed bool
+
+			if _, more := <-wp.workersChan; !more {
+				actualIsWorkersChanClosed = true
+			}
+
 			if actualWorkerChanLen != expectedWorkerChanLen {
 				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immidiate release of workers \r\n has WorkerChanLen length %v workers \r\n while expected %v \r\n", testAlias, actualWorkerChanLen, expectedWorkerChanLen)
 			}
 
 			if actualIsCancelationChanClosed != expectedIsCancelationChanClosed {
 				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immidiate release of workers \r\n has CancelationChan Closed ( %v )  \r\n while expected %v \r\n", testAlias, actualIsCancelationChanClosed, expectedIsCancelationChanClosed)
+			}
+
+			if actualIsWorkersChanClosed != expectedIsWorkersChanClosed {
+				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immidiate release of workers \r\n has WorkersChan Closed ( %v )  \r\n while expected %v \r\n", testAlias, actualIsWorkersChanClosed, expectedIsWorkersChanClosed)
 			}
 
 		}
