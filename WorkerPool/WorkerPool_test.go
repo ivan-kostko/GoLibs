@@ -70,9 +70,9 @@ func Test_WorkerPoolDoWorkersLimit(t *testing.T) {
 		ExpectedStartedWorkers int
 	}{
 		{
-			TestAlias:              "20 work items for 0 workers",
+			TestAlias:              "2 work items for 0 workers",
 			InitWorkerNumber:       0,
-			StartWorkerNumber:      20,
+			StartWorkerNumber:      2,
 			ExpectedStartedWorkers: 0,
 		},
 		{
@@ -299,13 +299,14 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 
 			dep := NewWorkerPool(initWorkerNumber)
 
+			wg := sync.WaitGroup{}
+
 			for i := 0; i < startWorkerNumber; i++ {
-				reportStart := make(chan struct{})
-				go func() { close(reportStart); dep.Do(func() { <-block }, 10) }()
-				<-reportStart
+				wg.Add(1)
+				go func() { wg.Done(); dep.Do(func() { <-block }, 10) }()
 			}
 
-			_ = <-time.After(1)
+			wg.Wait()
 
 			// chanel closed on Close() complete
 			closed := make(chan struct{})
@@ -639,19 +640,20 @@ func Test_ErrorOnObtainingSlotAfterClosing(t *testing.T) {
 
 			dep := NewWorkerPool(initWorkerNumber)
 
+			wg := sync.WaitGroup{}
+
 			for i := 0; i < startBlockedWorker; i++ {
-				reportStart := make(chan struct{})
-				go func() { close(reportStart); dep.Do(func() { <-block }, 10) }()
-				_ = <-reportStart
+				wg.Add(1)
+				go func() { wg.Done(); dep.Do(func() { <-block }, 10) }()
 			}
 
-			_ = <-time.After(1)
+			wg.Wait()
 
-			reportStart := make(chan struct{})
 			closed := make(chan struct{})
-			go func() { close(reportStart); dep.Close(); close(closed) }()
+			wg.Add(1)
+			go func() { wg.Done(); dep.Close(); close(closed) }()
 
-			_ = <-reportStart
+			wg.Wait()
 
 			actualError := dep.Do(func() { <-block }, timeOut)
 
