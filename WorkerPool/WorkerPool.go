@@ -18,7 +18,7 @@ type WorkerPool interface {
 
 	// Synchronously requests worker slot and end exectes/does WorkItem in parallel routine as soon as slot is obtained.
 	// If no slot aquired upon timeOut exceeds - returns ERR_TIMEDOUTREQUSTSLOT.
-	// If worker pool is already closed or closing while obtaining worker slot - return ERR_WORKERPOOLSHUTDOWN.
+	// If worker pool is already closed or closing while obtaining worker slot - returns ERR_WORKERPOOLSHUTDOWN.
 	Do(wi WorkItem, timeOut time.Duration) error
 
 	// Closes the worker pool.
@@ -69,7 +69,6 @@ func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 			return errors.New(ERR_WORKERPOOLSHUTDOWN)
 		}
 		break
-	// The channel will be only closed
 	case <-time.After(timeOut):
 		return errors.New(ERR_TIMEDOUTREQUSTSLOT)
 	case <-this.cancellationChan:
