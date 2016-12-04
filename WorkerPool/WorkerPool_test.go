@@ -105,7 +105,7 @@ func Test_WorkerPoolDoWorkersLimit(t *testing.T) {
 			// the chanel where workers report about start
 			started := make(chan struct{})
 
-			// chanel workes are waiting for close
+			// chanel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
@@ -245,7 +245,108 @@ func Test_WorkerPoolDoProcessAllWorkers(t *testing.T) {
 
 }
 
-func Test_WorkerPoolClose(t *testing.T) {
+func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
+
+	testCases := []struct {
+		TestAlias                       string
+		InitWorkerNumber                int
+		StartWorkerNumber               int
+		ExpectedWorkerChanLen           int
+		ExpectedIsCancelationChanClosed bool
+	}{
+		{
+			TestAlias:                       "20 work items for 0 workers",
+			InitWorkerNumber:                0,
+			StartWorkerNumber:               20,
+			ExpectedWorkerChanLen:           0,
+			ExpectedIsCancelationChanClosed: true,
+		},
+		{
+			TestAlias:                       "1 work item for 1 worker",
+			InitWorkerNumber:                1,
+			StartWorkerNumber:               1,
+			ExpectedWorkerChanLen:           0,
+			ExpectedIsCancelationChanClosed: true,
+		},
+		{
+			TestAlias:                       "1 work item for 10 workers",
+			InitWorkerNumber:                10,
+			StartWorkerNumber:               1,
+			ExpectedWorkerChanLen:           0,
+			ExpectedIsCancelationChanClosed: true,
+		},
+		{
+			TestAlias:                       "20 work items for 16 workers",
+			InitWorkerNumber:                16,
+			StartWorkerNumber:               20,
+			ExpectedWorkerChanLen:           0,
+			ExpectedIsCancelationChanClosed: true,
+		},
+		{
+			TestAlias:                       "200 work items for 16 workers",
+			InitWorkerNumber:                16,
+			StartWorkerNumber:               200,
+			ExpectedWorkerChanLen:           0,
+			ExpectedIsCancelationChanClosed: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testAlias := testCase.TestAlias
+		initWorkerNumber := testCase.InitWorkerNumber
+		startWorkerNumber := testCase.StartWorkerNumber
+		expectedWorkerChanLen := testCase.ExpectedWorkerChanLen
+		expectedIsCancelationChanClosed := testCase.ExpectedIsCancelationChanClosed
+
+		fn := func(t *testing.T) {
+
+			// chanel workers are waiting for close
+			block := make(chan struct{})
+
+			dep := NewWorkerPool(initWorkerNumber)
+
+			for i := 0; i < startWorkerNumber; i++ {
+				reportStart := make(chan struct{})
+				go func() { close(reportStart); dep.Do(func() { <-block }, 10) }()
+				<-reportStart
+			}
+
+			// chanel workers are waiting for close
+			closed := make(chan struct{})
+
+			go func() {
+				dep.Close()
+				close(closed)
+			}()
+
+			close(block)
+
+			<-closed
+
+			wp := dep.(*workerPool)
+
+			actualWorkerChanLen := len(wp.workersChan)
+
+			var actualIsCancelationChanClosed bool
+
+			if _, more := <-wp.cancellationChan; !more {
+				actualIsCancelationChanClosed = true
+			}
+
+			if actualWorkerChanLen != expectedWorkerChanLen {
+				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immidiate release of workers \r\n has WorkerChanLen length %v workers \r\n while expected %v \r\n", testAlias, actualWorkerChanLen, expectedWorkerChanLen)
+			}
+
+			if actualIsCancelationChanClosed != expectedIsCancelationChanClosed {
+				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immidiate release of workers \r\n has CancelationChan Closed ( %v )  \r\n while expected %v \r\n", testAlias, actualIsCancelationChanClosed, expectedIsCancelationChanClosed)
+			}
+
+		}
+		t.Run(testAlias, fn)
+	}
+}
+
+func Test_WorkerPoolCloseRunningWorkersComplete(t *testing.T) {
 
 	testCases := []struct {
 		TestAlias           string
@@ -296,7 +397,7 @@ func Test_WorkerPoolClose(t *testing.T) {
 			// the chanel where workers report about start
 			started := make(chan struct{})
 
-			// chanel workes are waiting for close
+			// chanel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
@@ -377,7 +478,7 @@ func Test_ErrorOnTimeOut(t *testing.T) {
 
 		fn := func(t *testing.T) {
 
-			// chanel workes are waiting for close
+			// chanel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
@@ -442,7 +543,7 @@ func Test_ErrorOnClosingWhileObtainingSlot(t *testing.T) {
 
 		fn := func(t *testing.T) {
 
-			// chanel workes are waiting for close
+			// chanel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
@@ -525,7 +626,7 @@ func Test_ErrorOnObtainingSlotAfterClosing(t *testing.T) {
 
 		fn := func(t *testing.T) {
 
-			// chanel workes are waiting for close
+			// chanel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
