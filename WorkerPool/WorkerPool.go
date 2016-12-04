@@ -30,7 +30,6 @@ type WorkerPool interface {
 
 // Private custom  implementation of worker pool.
 type workerPool struct {
-	isShuttingDown   bool
 	workersChan      chan struct{}
 	cancellationChan chan struct{}
 }
@@ -50,7 +49,6 @@ func NewWorkerPool(initWorkerNumber int) WorkerPool {
 	cancellationChan := make(chan struct{})
 
 	return &workerPool{
-		isShuttingDown:   false,
 		workersChan:      workersChan,
 		cancellationChan: cancellationChan,
 	}
@@ -60,24 +58,12 @@ func NewWorkerPool(initWorkerNumber int) WorkerPool {
 // Implements WorkerPool.Do(wi WorkItem) method
 func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 
-	if this.isShuttingDown {
-		return errors.New(ERR_WORKERPOOLSHUTDOWN)
-	}
-
-	t := time.NewTimer(timeOut)
-
 	select {
 	case _ = <-this.workersChan:
-		if !t.Stop() {
-			<-t.C
-		}
 	// The channel will be only closed
 	case _ = <-this.cancellationChan:
-		if !t.Stop() {
-			<-t.C
-		}
 		return errors.New(ERR_WORKERPOOLSHUTDOWN)
-	case _ = <-t.C:
+	case _ = <-time.After(timeOut):
 		return errors.New(ERR_TIMEDOUTREQUSTSLOT)
 	}
 
@@ -90,12 +76,10 @@ func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 }
 
 func (this *workerPool) Close() {
-	this.isShuttingDown = true
-
 	// notify those who are actually waiting about closing
 	close(this.cancellationChan)
 
-	// wait while all left assignments are done
+	// wait while all left assignments are done, and drain slots
 	for i := 0; i < cap(this.workersChan); i++ {
 		<-this.workersChan
 	}
@@ -105,5 +89,6 @@ func (this *workerPool) Close() {
 }
 
 func (this *workerPool) releaseSlot() {
+	// put slot back into pool
 	this.workersChan <- struct{}{}
 }
