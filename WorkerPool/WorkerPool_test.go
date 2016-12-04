@@ -149,9 +149,9 @@ func Test_WorkerPoolDoProcessAllWorkers(t *testing.T) {
 		ExpectedDonedWorkers int
 	}{
 		{
-			TestAlias:            "20 work items for 0 workers",
+			TestAlias:            "2 work items for 0 workers",
 			InitWorkerNumber:     0,
-			StartWorkerNumber:    20,
+			StartWorkerNumber:    2,
 			ExpectedDonedWorkers: 0,
 		},
 		{
@@ -173,16 +173,16 @@ func Test_WorkerPoolDoProcessAllWorkers(t *testing.T) {
 			ExpectedDonedWorkers: 20,
 		},
 		{
-			TestAlias:            "2000 work items for 16 workers",
+			TestAlias:            "1000 work items for 16 workers",
 			InitWorkerNumber:     16,
-			StartWorkerNumber:    2000,
-			ExpectedDonedWorkers: 2000,
+			StartWorkerNumber:    1000,
+			ExpectedDonedWorkers: 1000,
 		},
 		{
-			TestAlias:            "2000 work items for 1 workers",
+			TestAlias:            "1000 work items for 1 workers",
 			InitWorkerNumber:     1,
-			StartWorkerNumber:    2000,
-			ExpectedDonedWorkers: 2000,
+			StartWorkerNumber:    1000,
+			ExpectedDonedWorkers: 1000,
 		},
 	}
 
@@ -199,19 +199,26 @@ func Test_WorkerPoolDoProcessAllWorkers(t *testing.T) {
 			actualWorkerDone := 0
 			mtx := sync.RWMutex{}
 
+			// timeout should be long enough not to happen
 			timeOut := time.Duration(time.Millisecond)
 
+			wg := sync.WaitGroup{}
+
 			for i := 0; i < startWorkerNumber; i++ {
-				_ = dep.Do(func() {
+				wg.Add(1)
+				err := dep.Do(func() {
 					mtx.Lock()
 					actualWorkerDone++
 					mtx.Unlock()
+					wg.Done()
 				}, timeOut)
+				if err != nil {
+					wg.Done()
+				}
 			}
 
-			_ = <-time.After(timeOut)
+			wg.Wait()
 
-			// wait while all left assignments are done
 			mtx.RLock()
 			actualDoneWorkers := actualWorkerDone
 			mtx.RUnlock()
@@ -300,7 +307,7 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 
 			_ = <-time.After(1)
 
-			// chanel workers are waiting for close
+			// chanel closed on Close() complete
 			closed := make(chan struct{})
 
 			go func() {
@@ -403,25 +410,30 @@ func Test_WorkerPoolCloseRunningWorkersComplete(t *testing.T) {
 
 			timeOut := time.Duration(time.Microsecond)
 
+			wg := sync.WaitGroup{}
+
 			for i := 0; i < startWorkerNumber; i++ {
-				reportStart := make(chan struct{})
+				wg.Add(1)
+
 				go func() {
-					close(reportStart)
-					_ = dep.Do(func() {
+					err := dep.Do(func() {
 						mtx.Lock()
 						actualWorkerNumber++
 						mtx.Unlock()
+						wg.Done()
 						<-block
 					}, timeOut)
+					if err != nil {
+						wg.Done()
+					}
 				}()
-				<-reportStart
 			}
 
-			_ = <-time.After(time.Millisecond)
+			wg.Wait()
 
 			go dep.Close()
 
-			// stop blocking workers
+			// release workers
 			close(block)
 
 			mtx.RLock()
@@ -478,13 +490,14 @@ func Test_ErrorOnTimeOut(t *testing.T) {
 
 			dep := NewWorkerPool(initWorkerNumber)
 
+			wg := sync.WaitGroup{}
+
 			for i := 0; i < startBlockedWorker; i++ {
-				reportStart := make(chan struct{})
-				go func() { close(reportStart); _ = dep.Do(func() { <-block }, blockingFuncTimeout) }()
-				<-reportStart
+				wg.Add(1)
+				go func() { _ = dep.Do(func() { <-block }, blockingFuncTimeout); wg.Done() }()
 			}
 
-			_ = <-time.After(time.Microsecond)
+			wg.Wait()
 
 			actualError := dep.Do(func() { <-block }, timeOut)
 
@@ -512,14 +525,14 @@ func Test_ErrorOnClosingWhileObtainingSlot(t *testing.T) {
 		ExpectedError      error
 	}{
 		{
-			TestAlias:          "Generic 10/10/100",
+			TestAlias:          "Generic 10/10/Millisecond",
 			InitWorkerNumber:   10,
 			StartBlockedWorker: 10,
 			TimeOut:            time.Millisecond,
 			ExpectedError:      errors.New("The worker pool is shutting down and wont take new assignments"),
 		},
 		{
-			TestAlias:          "Generic 10/9/100",
+			TestAlias:          "Generic 10/9/Millisecond",
 			InitWorkerNumber:   10,
 			StartBlockedWorker: 9,
 			TimeOut:            time.Millisecond,
@@ -541,40 +554,41 @@ func Test_ErrorOnClosingWhileObtainingSlot(t *testing.T) {
 
 			dep := NewWorkerPool(initWorkerNumber)
 
-			//timeOut := time.Millisecond
+			wg := sync.WaitGroup{}
 
 			for i := 0; i < startBlockedWorker; i++ {
-				reportStart := make(chan struct{})
-				go func() { close(reportStart); _ = dep.Do(func() { <-block }, timeOut) }()
-				_ = <-reportStart
-
+				wg.Add(1)
+				go func() { _ = dep.Do(func() { <-block }, timeOut); wg.Done() }()
 			}
 
-			_ = <-time.After(time.Millisecond)
+			wg.Wait()
 
 			actualError := error(nil)
+			mtx := sync.Mutex{}
 
-			gocha := make(chan struct{})
-
-			reportStart := make(chan struct{})
+			wg.Add(1)
 			go func() {
-				close(reportStart)
+				wg.Done()
+				mtx.Lock()
 				actualError = dep.Do(func() { <-block }, timeOut)
-				close(gocha)
+				mtx.Unlock()
 			}()
 
-			_ = <-reportStart
+			wg.Wait()
 
+			wg.Add(1)
 			closed := make(chan struct{})
-			go func() { dep.Close(); close(closed) }()
+			go func() { wg.Done(); dep.Close(); close(closed) }()
 
-			_ = <-gocha
+			wg.Wait()
 
 			// stop blocking workers
 			go close(block)
 
 			_ = <-closed
 
+			mtx.Lock()
+			defer mtx.Unlock()
 			if !((actualError == nil && expectedError == nil) ||
 				(actualError != nil && expectedError != nil &&
 					actualError.Error() == expectedError.Error())) {
@@ -641,7 +655,7 @@ func Test_ErrorOnObtainingSlotAfterClosing(t *testing.T) {
 
 			actualError := dep.Do(func() { <-block }, timeOut)
 
-			// stop blocking workers
+			// release workers
 			go close(block)
 
 			_ = <-closed
