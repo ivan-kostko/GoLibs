@@ -59,29 +59,33 @@ func NewWorkerPool(initWorkerNumber int) WorkerPool {
 func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 
 	select {
-	case _ = <-this.workersChan:
+	case _, more := <-this.workersChan:
+		if more {
+			go func() {
+				defer this.releaseSlot()
+				wi()
+			}()
+		} else {
+			return errors.New(ERR_WORKERPOOLSHUTDOWN)
+		}
+		break
 	// The channel will be only closed
-	case _ = <-this.cancellationChan:
-		return errors.New(ERR_WORKERPOOLSHUTDOWN)
-	case _ = <-time.After(timeOut):
+	case <-time.After(timeOut):
 		return errors.New(ERR_TIMEDOUTREQUSTSLOT)
+	case <-this.cancellationChan:
+		return errors.New(ERR_WORKERPOOLSHUTDOWN)
 	}
-
-	go func() {
-		defer this.releaseSlot()
-		wi()
-	}()
 
 	return nil
 }
 
 func (this *workerPool) Close() {
-	// notify those who are actually waiting about closing
+	// notify about closing those who are actually waiting
 	close(this.cancellationChan)
 
 	// wait while all left assignments are done, and drain slots
 	for i := 0; i < cap(this.workersChan); i++ {
-		<-this.workersChan
+		_ = <-this.workersChan
 	}
 
 	close(this.workersChan)
