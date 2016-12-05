@@ -60,12 +60,7 @@ func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 
 	select {
 	case _, more := <-this.workersChan:
-		if more {
-			go func() {
-				defer this.releaseSlot()
-				wi()
-			}()
-		} else {
+		if !more {
 			return errors.New(ERR_WORKERPOOLSHUTDOWN)
 		}
 		break
@@ -74,6 +69,10 @@ func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 	case <-this.cancellationChan:
 		return errors.New(ERR_WORKERPOOLSHUTDOWN)
 	}
+	go func() {
+		defer this.releaseSlot()
+		wi()
+	}()
 
 	return nil
 }

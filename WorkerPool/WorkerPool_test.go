@@ -577,11 +577,15 @@ func Test_ErrorOnClosingWhileObtainingSlot(t *testing.T) {
 
 			wg.Wait()
 
+			_ = <-time.After(1)
+
 			wg.Add(1)
 			closed := make(chan struct{})
 			go func() { wg.Done(); dep.Close(); close(closed) }()
 
 			wg.Wait()
+
+			_ = <-time.After(1)
 
 			// stop blocking workers
 			go close(block)
