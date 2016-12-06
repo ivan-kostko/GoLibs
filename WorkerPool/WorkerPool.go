@@ -7,7 +7,7 @@ import (
 
 const (
 	ERR_WORKERPOOLSHUTDOWN = "The worker pool is shutting down and wont take new assignments"
-	ERR_TIMEDOUTREQUSTSLOT = "The request for a free execution slot has been timed out"
+	ERR_TIMEOUTREQUESTSLOT = "The request for a free execution slot has been timed out"
 )
 
 // Represents simple assignment.
@@ -16,14 +16,14 @@ type WorkItem func()
 // Represents simple workers pool operating on Projects and WorkItems.
 type WorkerPool interface {
 
-	// Synchronously requests worker slot and end exectes/does WorkItem in parallel routine as soon as slot is obtained.
-	// If no slot aquired upon timeOut exceeds - returns ERR_TIMEDOUTREQUSTSLOT.
+	// Synchronously requests worker slot and exectes/does WorkItem in goroutine as soon as slot is obtained.
+	// If no slot acquired upon timeOut exceeds - returns ERR_TIMEDOUTREQUSTSLOT.
 	// If worker pool is already closed or closing while obtaining worker slot - returns ERR_WORKERPOOLSHUTDOWN.
 	Do(wi WorkItem, timeOut time.Duration) error
 
 	// Closes the worker pool.
 	// All new requests will be rejected returning ERR_WORKERPOOLSHUTDOWN.
-	// All requests waiting for slots should be notified and canceled returning ERR_WORKERPOOLSHUTDOWN.
+	// All requests waiting for slots should be notified and cancelled returning ERR_WORKERPOOLSHUTDOWN.
 	// Processes already obtained their own slot shouldn't be affected and complete normal.
 	Close()
 }
@@ -65,7 +65,7 @@ func (this *workerPool) Do(wi WorkItem, timeOut time.Duration) error {
 		}
 		break
 	case <-time.After(timeOut):
-		return errors.New(ERR_TIMEDOUTREQUSTSLOT)
+		return errors.New(ERR_TIMEOUTREQUESTSLOT)
 	case <-this.cancellationChan:
 		return errors.New(ERR_WORKERPOOLSHUTDOWN)
 	}

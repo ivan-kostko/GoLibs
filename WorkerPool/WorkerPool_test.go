@@ -103,7 +103,7 @@ func Test_WorkerPoolDoWorkersLimit(t *testing.T) {
 
 		fn := func(t *testing.T) {
 
-			// chanel workers are waiting for close
+			// channel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
@@ -143,46 +143,46 @@ func Test_WorkerPoolDoWorkersLimit(t *testing.T) {
 func Test_WorkerPoolDoProcessAllWorkers(t *testing.T) {
 
 	testCases := []struct {
-		TestAlias            string
-		InitWorkerNumber     int
-		StartWorkerNumber    int
-		ExpectedDonedWorkers int
+		TestAlias           string
+		InitWorkerNumber    int
+		StartWorkerNumber   int
+		ExpectedDoneWorkers int
 	}{
 		{
-			TestAlias:            "2 work items for 0 workers",
-			InitWorkerNumber:     0,
-			StartWorkerNumber:    2,
-			ExpectedDonedWorkers: 0,
+			TestAlias:           "2 work items for 0 workers",
+			InitWorkerNumber:    0,
+			StartWorkerNumber:   2,
+			ExpectedDoneWorkers: 0,
 		},
 		{
-			TestAlias:            "1 work item for 1 worker",
-			InitWorkerNumber:     1,
-			StartWorkerNumber:    1,
-			ExpectedDonedWorkers: 1,
+			TestAlias:           "1 work item for 1 worker",
+			InitWorkerNumber:    1,
+			StartWorkerNumber:   1,
+			ExpectedDoneWorkers: 1,
 		},
 		{
-			TestAlias:            "1 work item for 10 workers",
-			InitWorkerNumber:     10,
-			StartWorkerNumber:    1,
-			ExpectedDonedWorkers: 1,
+			TestAlias:           "1 work item for 10 workers",
+			InitWorkerNumber:    10,
+			StartWorkerNumber:   1,
+			ExpectedDoneWorkers: 1,
 		},
 		{
-			TestAlias:            "20 work items for 16 workers",
-			InitWorkerNumber:     16,
-			StartWorkerNumber:    20,
-			ExpectedDonedWorkers: 20,
+			TestAlias:           "20 work items for 16 workers",
+			InitWorkerNumber:    16,
+			StartWorkerNumber:   20,
+			ExpectedDoneWorkers: 20,
 		},
 		{
-			TestAlias:            "1000 work items for 16 workers",
-			InitWorkerNumber:     16,
-			StartWorkerNumber:    1000,
-			ExpectedDonedWorkers: 1000,
+			TestAlias:           "1000 work items for 16 workers",
+			InitWorkerNumber:    16,
+			StartWorkerNumber:   1000,
+			ExpectedDoneWorkers: 1000,
 		},
 		{
-			TestAlias:            "1000 work items for 1 workers",
-			InitWorkerNumber:     1,
-			StartWorkerNumber:    1000,
-			ExpectedDonedWorkers: 1000,
+			TestAlias:           "1000 work items for 1 workers",
+			InitWorkerNumber:    1,
+			StartWorkerNumber:   1000,
+			ExpectedDoneWorkers: 1000,
 		},
 	}
 
@@ -190,7 +190,7 @@ func Test_WorkerPoolDoProcessAllWorkers(t *testing.T) {
 		testAlias := testCase.TestAlias
 		initWorkerNumber := testCase.InitWorkerNumber
 		startWorkerNumber := testCase.StartWorkerNumber
-		expectedDoneWorkers := testCase.ExpectedDonedWorkers
+		expectedDoneWorkers := testCase.ExpectedDoneWorkers
 
 		fn := func(t *testing.T) {
 
@@ -235,52 +235,52 @@ func Test_WorkerPoolDoProcessAllWorkers(t *testing.T) {
 func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 
 	testCases := []struct {
-		TestAlias                       string
-		InitWorkerNumber                int
-		StartWorkerNumber               int
-		ExpectedWorkerChanLen           int
-		ExpectedIsCancelationChanClosed bool
-		ExpectedIsWorkersChanClosed     bool
+		TestAlias                        string
+		InitWorkerNumber                 int
+		StartWorkerNumber                int
+		ExpectedWorkerChanLen            int
+		ExpectedIsCancellationChanClosed bool
+		ExpectedIsWorkersChanClosed      bool
 	}{
 		{
-			TestAlias:                       "20 work items for 0 workers",
-			InitWorkerNumber:                0,
-			StartWorkerNumber:               20,
-			ExpectedWorkerChanLen:           0,
-			ExpectedIsCancelationChanClosed: true,
-			ExpectedIsWorkersChanClosed:     true,
+			TestAlias:                        "20 work items for 0 workers",
+			InitWorkerNumber:                 0,
+			StartWorkerNumber:                20,
+			ExpectedWorkerChanLen:            0,
+			ExpectedIsCancellationChanClosed: true,
+			ExpectedIsWorkersChanClosed:      true,
 		},
 		{
-			TestAlias:                       "1 work item for 1 worker",
-			InitWorkerNumber:                1,
-			StartWorkerNumber:               1,
-			ExpectedWorkerChanLen:           0,
-			ExpectedIsCancelationChanClosed: true,
-			ExpectedIsWorkersChanClosed:     true,
+			TestAlias:                        "1 work item for 1 worker",
+			InitWorkerNumber:                 1,
+			StartWorkerNumber:                1,
+			ExpectedWorkerChanLen:            0,
+			ExpectedIsCancellationChanClosed: true,
+			ExpectedIsWorkersChanClosed:      true,
 		},
 		{
-			TestAlias:                       "1 work item for 10 workers",
-			InitWorkerNumber:                10,
-			StartWorkerNumber:               1,
-			ExpectedWorkerChanLen:           0,
-			ExpectedIsCancelationChanClosed: true,
-			ExpectedIsWorkersChanClosed:     true,
+			TestAlias:                        "1 work item for 10 workers",
+			InitWorkerNumber:                 10,
+			StartWorkerNumber:                1,
+			ExpectedWorkerChanLen:            0,
+			ExpectedIsCancellationChanClosed: true,
+			ExpectedIsWorkersChanClosed:      true,
 		},
 		{
-			TestAlias:                       "20 work items for 16 workers",
-			InitWorkerNumber:                16,
-			StartWorkerNumber:               20,
-			ExpectedWorkerChanLen:           0,
-			ExpectedIsCancelationChanClosed: true,
-			ExpectedIsWorkersChanClosed:     true,
+			TestAlias:                        "20 work items for 16 workers",
+			InitWorkerNumber:                 16,
+			StartWorkerNumber:                20,
+			ExpectedWorkerChanLen:            0,
+			ExpectedIsCancellationChanClosed: true,
+			ExpectedIsWorkersChanClosed:      true,
 		},
 		{
-			TestAlias:                       "200 work items for 16 workers",
-			InitWorkerNumber:                16,
-			StartWorkerNumber:               200,
-			ExpectedWorkerChanLen:           0,
-			ExpectedIsCancelationChanClosed: true,
-			ExpectedIsWorkersChanClosed:     true,
+			TestAlias:                        "200 work items for 16 workers",
+			InitWorkerNumber:                 16,
+			StartWorkerNumber:                200,
+			ExpectedWorkerChanLen:            0,
+			ExpectedIsCancellationChanClosed: true,
+			ExpectedIsWorkersChanClosed:      true,
 		},
 	}
 
@@ -289,12 +289,12 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 		initWorkerNumber := testCase.InitWorkerNumber
 		startWorkerNumber := testCase.StartWorkerNumber
 		expectedWorkerChanLen := testCase.ExpectedWorkerChanLen
-		expectedIsCancelationChanClosed := testCase.ExpectedIsCancelationChanClosed
+		expectedIsCancellationChanClosed := testCase.ExpectedIsCancellationChanClosed
 		expectedIsWorkersChanClosed := testCase.ExpectedIsWorkersChanClosed
 
 		fn := func(t *testing.T) {
 
-			// chanel workers are waiting for close
+			// channel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
@@ -308,7 +308,7 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 
 			wg.Wait()
 
-			// chanel closed on Close() complete
+			// channel closed on Close() complete
 			closed := make(chan struct{})
 
 			go func() {
@@ -324,10 +324,10 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 
 			actualWorkerChanLen := len(wp.workersChan)
 
-			var actualIsCancelationChanClosed bool
+			var actualIsCancellationChanClosed bool
 
 			if _, more := <-wp.cancellationChan; !more {
-				actualIsCancelationChanClosed = true
+				actualIsCancellationChanClosed = true
 			}
 
 			var actualIsWorkersChanClosed bool
@@ -337,15 +337,15 @@ func Test_WorkerPoolReadyForGCAfterClose(t *testing.T) {
 			}
 
 			if actualWorkerChanLen != expectedWorkerChanLen {
-				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immidiate release of workers \r\n has WorkerChanLen length %v workers \r\n while expected %v \r\n", testAlias, actualWorkerChanLen, expectedWorkerChanLen)
+				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immediate release of workers \r\n has WorkerChanLen length %v workers \r\n while expected %v \r\n", testAlias, actualWorkerChanLen, expectedWorkerChanLen)
 			}
 
-			if actualIsCancelationChanClosed != expectedIsCancelationChanClosed {
-				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immidiate release of workers \r\n has CancelationChan Closed ( %v )  \r\n while expected %v \r\n", testAlias, actualIsCancelationChanClosed, expectedIsCancelationChanClosed)
+			if actualIsCancellationChanClosed != expectedIsCancellationChanClosed {
+				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immediate release of workers \r\n has CancellationChan Closed ( %v )  \r\n while expected %v \r\n", testAlias, actualIsCancellationChanClosed, expectedIsCancellationChanClosed)
 			}
 
 			if actualIsWorkersChanClosed != expectedIsWorkersChanClosed {
-				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immidiate release of workers \r\n has WorkersChan Closed ( %v )  \r\n while expected %v \r\n", testAlias, actualIsWorkersChanClosed, expectedIsWorkersChanClosed)
+				t.Errorf("For TestAlias '%s' WorkerPool.Close() with immediate release of workers \r\n has WorkersChan Closed ( %v )  \r\n while expected %v \r\n", testAlias, actualIsWorkersChanClosed, expectedIsWorkersChanClosed)
 			}
 
 		}
@@ -401,7 +401,7 @@ func Test_WorkerPoolCloseRunningWorkersComplete(t *testing.T) {
 
 		fn := func(t *testing.T) {
 
-			// chanel workers are waiting for close
+			// channel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
@@ -442,7 +442,7 @@ func Test_WorkerPoolCloseRunningWorkersComplete(t *testing.T) {
 			mtx.RUnlock()
 
 			if actualDoneWorkers != expectedDoneWorkers {
-				t.Errorf("For TestAlias '%s' WorkerPool.Do() with immidiate WorkerPool.Close() \r\n done %v workers \r\n while expected %v \r\n", testAlias, actualDoneWorkers, expectedDoneWorkers)
+				t.Errorf("For TestAlias '%s' WorkerPool.Do() with immediate WorkerPool.Close() \r\n done %v workers \r\n while expected %v \r\n", testAlias, actualDoneWorkers, expectedDoneWorkers)
 			}
 		}
 		t.Run(testAlias, fn)
@@ -486,7 +486,7 @@ func Test_ErrorOnTimeOut(t *testing.T) {
 
 		fn := func(t *testing.T) {
 
-			// chanel workers are waiting for close
+			// channel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
@@ -550,7 +550,7 @@ func Test_ErrorOnClosingWhileObtainingSlot(t *testing.T) {
 
 		fn := func(t *testing.T) {
 
-			// chanel workers are waiting for close
+			// channel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
@@ -593,6 +593,8 @@ func Test_ErrorOnClosingWhileObtainingSlot(t *testing.T) {
 			_ = <-closed
 
 			mtx.Lock()
+
+			// The defer in TD tests worked badly in 1.7.0...4
 			defer mtx.Unlock()
 			if !((actualError == nil && expectedError == nil) ||
 				(actualError != nil && expectedError != nil &&
@@ -639,7 +641,7 @@ func Test_ErrorOnObtainingSlotAfterClosing(t *testing.T) {
 
 		fn := func(t *testing.T) {
 
-			// chanel workers are waiting for close
+			// channel workers are waiting for close
 			block := make(chan struct{})
 
 			dep := NewWorkerPool(initWorkerNumber)
