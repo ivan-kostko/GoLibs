@@ -16,6 +16,12 @@ package Logger
 
 // "testing"
 
+func init() {
+	// shut up timestamp
+	now = func() string { return "" }
+
+}
+
 func ExampleGetStdTerminalLogger() {
 
 	l := GetStdTerminalLogger()
@@ -39,23 +45,23 @@ func ExampleGetStdTerminalLogger() {
 	l.Logf(None, "TestLogf %v", "Extra")
 
 	// Output:
-	// Alert [TestAlert]
-	// Alert [TestAlertf Extra]
-	// Emergency [TestEmergency]
-	// Emergency [TestEmergencyf Extra]
-	// Critical [TestCritical]
-	// Critical [TestCriticalf Extra]
-	// Error [TestError]
-	// Error [TestErrorf Extra]
-	// Warning [TestWarning]
-	// Warning [TestWarningf Extra]
-	// Notice [TestNotice]
-	// Notice [TestNoticef Extra]
-	// Info [TestInfo]
-	// Info [TestInfof Extra]
-	// Debug [TestDebug]
-	// Debug [TestDebugf Extra]
-	// None [TestLog]
-	// None [TestLogf Extra]
+	// [Alert] TestAlert
+	//  [Alert] TestAlertf Extra
+	//  [Emergency] TestEmergency
+	//  [Emergency] TestEmergencyf Extra
+	//  [Critical] TestCritical
+	//  [Critical] TestCriticalf Extra
+	//  [Error] TestError
+	//  [Error] TestErrorf Extra
+	//  [Warning] TestWarning
+	//  [Warning] TestWarningf Extra
+	//  [Notice] TestNotice
+	//  [Notice] TestNoticef Extra
+	//  [Info] TestInfo
+	//  [Info] TestInfof Extra
+	//  [Debug] TestDebug
+	//  [Debug] TestDebugf Extra
+	//  [None] TestLog
+	//  [None] TestLogf Extra
 
 }
