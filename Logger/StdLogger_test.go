@@ -14,17 +14,17 @@
 
 package Logger
 
-// "testing"
-
-func init() {
-	// shut up timestamp
-	now = func() string { return "" }
-
-}
-
 func ExampleGetStdTerminalLogger() {
 
+	// mock time for testing
+	now = func() string { return "2017-03-11 08:55:34.043958533 +0100 CET" }
+
+	// ....
+
+	// Get a logger to stdout
 	l := GetStdTerminalLogger()
+
+	// Lst's log
 	l.Alert("TestAlert")
 	l.Alertf("TestAlertf %v", "Extra")
 	l.Emergency("TestEmergency")
@@ -45,23 +45,23 @@ func ExampleGetStdTerminalLogger() {
 	l.Logf(None, "TestLogf %v", "Extra")
 
 	// Output:
-	// [Alert] TestAlert
-	//  [Alert] TestAlertf Extra
-	//  [Emergency] TestEmergency
-	//  [Emergency] TestEmergencyf Extra
-	//  [Critical] TestCritical
-	//  [Critical] TestCriticalf Extra
-	//  [Error] TestError
-	//  [Error] TestErrorf Extra
-	//  [Warning] TestWarning
-	//  [Warning] TestWarningf Extra
-	//  [Notice] TestNotice
-	//  [Notice] TestNoticef Extra
-	//  [Info] TestInfo
-	//  [Info] TestInfof Extra
-	//  [Debug] TestDebug
-	//  [Debug] TestDebugf Extra
-	//  [None] TestLog
-	//  [None] TestLogf Extra
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Alert] TestAlert
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Alert] TestAlertf Extra
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Emergency] TestEmergency
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Emergency] TestEmergencyf Extra
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Critical] TestCritical
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Critical] TestCriticalf Extra
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Error] TestError
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Error] TestErrorf Extra
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Warning] TestWarning
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Warning] TestWarningf Extra
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Notice] TestNotice
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Notice] TestNoticef Extra
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Info] TestInfo
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Info] TestInfof Extra
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Debug] TestDebug
+	// 2017-03-11 08:55:34.043958533 +0100 CET [Debug] TestDebugf Extra
+	// 2017-03-11 08:55:34.043958533 +0100 CET [None] TestLog
+	// 2017-03-11 08:55:34.043958533 +0100 CET [None] TestLogf Extra
 
 }
