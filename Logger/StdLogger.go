@@ -16,12 +16,15 @@ package Logger
 
 import (
 	"fmt"
+	"time"
 )
+
+var now = func() string { return (time.Now()).String() }
 
 func GetStdTerminalLogger() ILogger {
 	return GetNewLogAdapter(stdLogToTerminal)
 }
 
 func stdLogToTerminal(level Level, args ...interface{}) {
-	fmt.Println(level.String(), args)
+	fmt.Println(now(), `[`+level.String()+`]`, fmt.Sprint(args...))
 }
