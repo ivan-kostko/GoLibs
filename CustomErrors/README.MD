@@ -22,8 +22,8 @@ message contains better error description.
 Also, it has an option to report call stack trace ( **recommended only for
 debugging** ) :
 
-* - being built with `fullStackTrace` tag it will report complete stack trace
-for NewError/NewErrorF call
+* - being built with `fullCallStack` tag it will report up to `MAXNESTEDLEVEL`
+functions in stack for NewError/NewErrorF call
 
 ## Usage
 
