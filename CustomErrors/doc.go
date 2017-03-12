@@ -27,8 +27,8 @@ The package implements extended error functionality, allowing slightly better er
 It gives a possibility to define further behaviour based on error type while message contains better error description.
 
 Also, it has an option to report call stack trace ( **recommended only for debugging** ) :
-* being built with `fullStackTrace` flag it will report complete stack trace for NewError/NewErrorF call
-* being built with `shortStackTrace` flag it will report caller for NewError/NewErrorF call
+
+* - being built with `fullStackTrace` tag it will report complete stack trace for NewError/NewErrorF call
 
 */
 package CustomErrors
