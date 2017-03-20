@@ -23,6 +23,7 @@ import (
 // Represents enum of predefined error types
 type ErrorType int
 
+// List of predefined error types
 const (
 	BasicError ErrorType = iota
 	InvalidOperation
@@ -35,23 +36,33 @@ const (
 type Error struct {
 	Type    ErrorType
 	Message string
+	callStack
 }
 
 // Implementation of standart error interface
 func (e Error) Error() string {
-	return fmt.Sprintf("%T{Type:%s, Message:%s}", e, e.Type, e.Message)
+	if e.callStack == nil {
+		return fmt.Sprintf("%T{Type:%s, Message:%s}", e, e.Type, e.Message)
+	}
+	return fmt.Sprintf("%T{Type:%s, Message:%s\r\nCall Stack: \r\n %s}", e, e.Type, e.Message, e.callStack.toString())
 }
 
 // Error factory
 func NewError(typ ErrorType, msg string) *Error {
-	return &Error{
-		Type:    typ,
-		Message: msg,
-	}
+	return newError(typ, msg)
 }
 
 // Error factory generating message in fmt.Sprintf manner
 func NewErrorF(typ ErrorType, baseMsg string, args ...interface{}) *Error {
 	msg := fmt.Sprintf(baseMsg, args...)
-	return NewError(typ, msg)
+	return newError(typ, msg)
+}
+
+// Private Error factory
+func newError(typ ErrorType, msg string) *Error {
+	return &Error{
+		Type:      typ,
+		Message:   msg,
+		callStack: newCallStack(2),
+	}
 }

@@ -65,17 +65,95 @@ func TestErrorImplements_errorInterface(t *testing.T) {
 	var _ error = &Error{}
 }
 
-func TestErrorErrorMethod(t *testing.T) {
-	expected := `CustomErrors.Error{Type:AccessViolation, Message:Testing}`
-	var err error = Error{Type: AccessViolation, Message: "Testing"}
-	if err.Error() != expected {
-		t.Errorf("err.Error() returned %v while expected %v", err.Error(), expected)
+func TestErrorTypeStringer(t *testing.T) {
+
+	testCases := []struct {
+		TestAlias      string
+		ErrorType      ErrorType
+		ExpectedString string
+	}{
+		{
+			TestAlias:      "BasicError",
+			ErrorType:      BasicError,
+			ExpectedString: "BasicError",
+		},
+		{
+			TestAlias:      "InvalidOperation",
+			ErrorType:      InvalidOperation,
+			ExpectedString: "InvalidOperation",
+		},
+		{
+			TestAlias:      "InvalidArgument",
+			ErrorType:      InvalidArgument,
+			ExpectedString: "InvalidArgument",
+		},
+		{
+			TestAlias:      "AccessViolation",
+			ErrorType:      AccessViolation,
+			ExpectedString: "AccessViolation",
+		},
+		{
+			TestAlias:      "Nonsupported",
+			ErrorType:      Nonsupported,
+			ExpectedString: "Nonsupported",
+		},
 	}
+
+	for _, testCase := range testCases {
+		testAlias := testCase.TestAlias
+		errorType := testCase.ErrorType
+		expectedString := testCase.ExpectedString
+
+		testFn := func(t *testing.T) {
+
+			actualString := fmt.Sprintf("%s", errorType)
+			if actualString != expectedString {
+				t.Errorf("%s :: Error.Error() returned\r\n %v \r\n while expected \r\n %v", testAlias, actualString, expectedString)
+			}
+
+		}
+		t.Run(testAlias, testFn)
+	}
+
 }
 
-func TestErrorTypeStringer(t *testing.T) {
-	expected := "AccessViolation"
-	if fmt.Sprintf("%s", AccessViolation) != expected {
-		t.Errorf("Returned %s while expected %v", AccessViolation, expected)
+func TestErrorErrorMethod(t *testing.T) {
+
+	testCases := []struct {
+		TestAlias      string
+		ActualError    Error
+		ExpectedString string
+	}{
+		{
+			TestAlias:      `CustomErrors.Error{Type:InvalidArgument, Message:Testing}`,
+			ActualError:    Error{Type: InvalidArgument, Message: "Testing"},
+			ExpectedString: `CustomErrors.Error{Type:InvalidArgument, Message:Testing}`,
+		},
+		{
+			TestAlias:      `CustomErrors.Error{Type:InvalidOperation, Message:Testing}`,
+			ActualError:    Error{Type: InvalidOperation, Message: "Testing"},
+			ExpectedString: `CustomErrors.Error{Type:InvalidOperation, Message:Testing}`,
+		},
+		{
+			TestAlias:      `CustomErrors.Error{Type:AccessViolation, Message:Testing}`,
+			ActualError:    Error{Type: AccessViolation, Message: "Testing"},
+			ExpectedString: `CustomErrors.Error{Type:AccessViolation, Message:Testing}`,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testAlias := testCase.TestAlias
+		actualError := testCase.ActualError
+		expectedString := testCase.ExpectedString
+
+		testFn := func(t *testing.T) {
+
+			actualString := actualError.Error()
+			if actualString != expectedString {
+				t.Errorf("%s :: Error.Error() returned\r\n %v \r\n while expected \r\n %v", testAlias, actualString, expectedString)
+			}
+
+		}
+		t.Run(testAlias, testFn)
 	}
 }
